@@ -55,6 +55,7 @@ public:
     struct getData_output
     {
         id adminAddress;
+        id issuerAddress;
         uint64 totalVotingPower;
         uint64 proposalCreateFund;
         uint64 reinvestingFund;
@@ -456,6 +457,7 @@ protected:
     PUBLIC_FUNCTION_WITH_LOCALS(getData)
     {
         output.adminAddress = state.adminAddress;
+        output.issuerAddress = state.QCAP_ISSUER;
         output.quorumPercent = state.quorumPercent;
         output.totalVotingPower = state.totalVotingPower;
         output.proposalCreateFund = state.proposalCreateFund;
