@@ -1162,7 +1162,7 @@ protected:
             }
             return ;
         }
-        if (locals.year >= 27 && input.team != 0)
+        if (locals.year >= 26 && input.team != 0)
         {
             output.returnCode = QVAULTLogInfo::QvaultNotInTime;
             if (qpi.invocationReward() > 0)
