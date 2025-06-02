@@ -114,7 +114,7 @@ public:
 
     struct submitGP_input
     {
-
+        Array<uint8, 256> url;
     };
 
     struct submitGP_output
@@ -125,6 +125,7 @@ public:
     struct submitQCP_input
     {
         uint32 newQuorumPercent;
+        Array<uint8, 256> url;
     };
 
     struct submitQCP_output
@@ -135,6 +136,7 @@ public:
     struct submitIPOP_input
     {
         uint32 ipoContractIndex;
+        Array<uint8, 256> url;
     };
 
     struct submitIPOP_output
@@ -146,6 +148,7 @@ public:
     {
         uint64 amountPerEpoch;
         uint32 numberOfEpoch;
+        Array<uint8, 256> url;
     };
 
     struct submitQEarnP_output
@@ -157,6 +160,7 @@ public:
     {
         uint64 priceOfOneQcap;
         uint32 amountOfQcap;
+        Array<uint8, 256> url;
     };
 
     struct submitFundP_output
@@ -171,6 +175,7 @@ public:
         uint32 amountOfQcap;
         uint32 indexOfShare;
         uint32 amountOfShare;
+        Array<uint8, 256> url;
     };
 
     struct submitMKTP_output
@@ -184,6 +189,7 @@ public:
         uint32 team;
         uint32 burn;
         uint32 distribute;
+        Array<uint8, 256> url;
     };
 
     struct submitAlloP_output
@@ -194,6 +200,7 @@ public:
     struct submitMSP_input
     {
         uint32 shareIndex;
+        Array<uint8, 256> url;
     };
 
     struct submitMSP_output
@@ -257,16 +264,16 @@ public:
     };
 
 protected:
-#pragma pack(push, 1)
+
     struct stakingInfo
     {
         id stakerAddress;
         uint32 amount;
     };
-#pragma pack(pop)
+
     Array<stakingInfo, 1048576> staker;
     Array<stakingInfo, 1048576> votingPower;
-#pragma pack(push, 1)
+
     struct GPInfo                   // General proposal
     {
         id proposer;
@@ -275,11 +282,12 @@ protected:
         uint32 numberOfNo;
         uint32 proposedEpoch;
         uint32 currentQuorumPercent;
+        Array<uint8, 256> url;
         uint8 result;  // 0 is the passed proposal, 1 is the rejected proposal. 2 is the insufficient quorum.
     };
-#pragma pack(pop)
+
     Array<GPInfo, QVAULT_MAX_NUMBER_OF_PROPOSAL> GP;
-#pragma pack(push, 1)
+
     struct QCPInfo                   // Quorum change proposal
     {
         id proposer;
@@ -289,11 +297,12 @@ protected:
         uint32 proposedEpoch;
         uint32 currentQuorumPercent;
         uint32 newQuorumPercent;
+        Array<uint8, 256> url;
         uint8 result;  // 0 is the passed proposal, 1 is the rejected proposal. 2 is the insufficient quorum.
     };
-#pragma pack(pop)
+
     Array<QCPInfo, QVAULT_MAX_NUMBER_OF_PROPOSAL> QCP;
-#pragma pack(push, 1)
+
     struct IPOPInfo         // IPO participation
     {
         id proposer;
@@ -305,11 +314,12 @@ protected:
         uint32 proposedEpoch;
         uint32 ipoContractIndex;
         uint32 currentQuorumPercent;
+        Array<uint8, 256> url;
         uint8 result;  // 0 is the passed proposal, 1 is the rejected proposal. 2 is the insufficient quorum. 3 is the insufficient invest funds.
     };
-#pragma pack(pop)
+
     Array<IPOPInfo, QVAULT_MAX_NUMBER_OF_PROPOSAL> IPOP;
-#pragma pack(push, 1)
+
     struct QEarnPInfo       // Qearn participation proposal
     {
         id proposer;
@@ -320,12 +330,13 @@ protected:
         uint32 numberOfNo;
         uint32 proposedEpoch;
         uint32 currentQuorumPercent;
+        Array<uint8, 256> url;
         uint8 numberOfEpoch;
         uint8 result;  // 0 is the passed proposal, 1 is the rejected proposal. 2 is the insufficient quorum. 3 is the insufficient funds.
     };
-#pragma pack(pop)
+
     Array<QEarnPInfo, QVAULT_MAX_NUMBER_OF_PROPOSAL> QEarnP;
-#pragma pack(push, 1)
+
     struct FundPInfo            // Fundraising proposal
     {
         id proposer;
@@ -337,11 +348,12 @@ protected:
         uint32 restSaleAmount;
         uint32 proposedEpoch;
         uint32 currentQuorumPercent;
+        Array<uint8, 256> url;
         uint8 result;  // 0 is the passed proposal, 1 is the rejected proposal. 2 is the insufficient quorum.
     };
-#pragma pack(pop)
+
     Array<FundPInfo, QVAULT_MAX_NUMBER_OF_PROPOSAL> FundP;
-#pragma pack(push, 1)
+
     struct MKTPInfo                 //  Marketplace proposal
     {
         id proposer;
@@ -355,15 +367,16 @@ protected:
         uint32 proposedEpoch;
         uint32 shareIndex;
         uint32 amountOfShare;
+        Array<uint8, 256> url;
         uint8 result;  // 0 is the passed proposal, 1 is the rejected proposal. 2 is the insufficient quorum. 3 is the insufficient funds. 4 is the insufficient Qcap.
     };
-#pragma pack(pop)
+
     Array<MKTPInfo, QVAULT_MAX_NUMBER_OF_PROPOSAL> MKTP;
 
     /*
         % Allocation Proposal Information
     */
-    #pragma pack(push, 1)
+    
     struct AlloPInfo
     {
         id proposer;
@@ -376,15 +389,16 @@ protected:
         uint32 distributed;
         uint32 team;
         uint32 burnQcap;
+        Array<uint8, 256> url;
         uint8 result;  // 0 is the passed proposal, 1 is the rejected proposal. 2 is the insufficient quorum.
     };
-#pragma pack(pop)
+
     Array<AlloPInfo, QVAULT_MAX_NUMBER_OF_PROPOSAL> AlloP;
 
     /*
         Muslim Proposal Information
     */
-#pragma pack(push, 1)
+
     struct MSPInfo
     {
         id proposer;
@@ -394,22 +408,20 @@ protected:
         uint32 proposedEpoch;
         uint32 muslimShareIndex;
         uint32 currentQuorumPercent;
+        Array<uint8, 256> url;
         uint8 result;  // 0 is the passed proposal, 1 is the rejected proposal. 2 is the insufficient quorum.
     };
-#pragma pack(pop)
     Array<MSPInfo, 1024> MSP;
 
     id QCAP_ISSUER;
     id reinvestingAddress;
     id adminAddress;
     HashSet<id, 1048576> muslim;
-#pragma pack(push, 1)
     struct voteStatusInfo
     {
         uint32 proposalId;
         uint8 proposalType;
     };
-    #pragma pack(pop)
     HashMap<id, Array<voteStatusInfo, 16>, 1048576> vote;
     HashMap<id, uint8, 1048576> countOfVote;
 
@@ -642,6 +654,10 @@ protected:
 
         locals.newProposal.currentQuorumPercent = state.quorumPercent;
         locals.newProposal.currentTotalVotingPower = state.totalVotingPower;
+        for (locals._t = 0; locals._t < 256; locals._t++)
+        {
+            locals.newProposal.url.set(locals._t, input.url.get(locals._t));
+        }
         locals.newProposal.proposedEpoch = qpi.epoch();
         locals.newProposal.numberOfYes = 0;
         locals.newProposal.numberOfNo = 0;
@@ -711,6 +727,10 @@ protected:
 
         locals.newProposal.currentQuorumPercent = state.quorumPercent;
         locals.newProposal.currentTotalVotingPower = state.totalVotingPower;
+        for (locals._t = 0; locals._t < 256; locals._t++)
+        {
+            locals.newProposal.url.set(locals._t, input.url.get(locals._t));
+        }
         locals.newProposal.proposedEpoch = qpi.epoch();
         locals.newProposal.numberOfYes = 0;
         locals.newProposal.numberOfNo = 0;
@@ -791,6 +811,10 @@ protected:
 
         locals.newProposal.currentQuorumPercent = state.quorumPercent;
         locals.newProposal.currentTotalVotingPower = state.totalVotingPower;
+        for (locals._t = 0; locals._t < 256; locals._t++)
+        {
+            locals.newProposal.url.set(locals._t, input.url.get(locals._t));
+        }
         locals.newProposal.proposedEpoch = qpi.epoch();
         locals.newProposal.numberOfYes = 0;
         locals.newProposal.numberOfNo = 0;
@@ -891,6 +915,10 @@ protected:
         locals.newProposal.assignedFundPerEpoch = input.amountPerEpoch;
         locals.newProposal.amountOfInvestPerEpoch = input.amountPerEpoch;
         locals.newProposal.numberOfEpoch = input.numberOfEpoch;
+        for (locals._t = 0; locals._t < 256; locals._t++)
+        {
+            locals.newProposal.url.set(locals._t, input.url.get(locals._t));
+        }
 
         state.QEarnP.set(state.numberOfQEarnP++, locals.newProposal);
         output.returnCode = QVAULTLogInfo::QvaultSuccess;
@@ -1001,6 +1029,10 @@ protected:
 
         locals.newProposal.currentQuorumPercent = state.quorumPercent;
         locals.newProposal.currentTotalVotingPower = state.totalVotingPower;
+        for (locals._t = 0; locals._t < 256; locals._t++)
+        {
+            locals.newProposal.url.set(locals._t, input.url.get(locals._t));
+        }
         locals.newProposal.proposedEpoch = qpi.epoch();
         locals.newProposal.numberOfYes = 0;
         locals.newProposal.numberOfNo = 0;
@@ -1050,6 +1082,10 @@ protected:
 
         locals.newProposal.currentQuorumPercent = state.quorumPercent;
         locals.newProposal.currentTotalVotingPower = state.totalVotingPower;
+        for (locals._t = 0; locals._t < 256; locals._t++)
+        {
+            locals.newProposal.url.set(locals._t, input.url.get(locals._t));
+        }
         locals.newProposal.proposedEpoch = qpi.epoch();
         locals.newProposal.numberOfYes = 0;
         locals.newProposal.numberOfNo = 0;
@@ -1163,6 +1199,10 @@ protected:
 
         locals.newProposal.currentQuorumPercent = state.quorumPercent;
         locals.newProposal.currentTotalVotingPower = state.totalVotingPower;
+        for (locals._t = 0; locals._t < 256; locals._t++)
+        {
+            locals.newProposal.url.set(locals._t, input.url.get(locals._t));
+        }
         locals.newProposal.proposedEpoch = qpi.epoch();
         locals.newProposal.numberOfYes = 0;
         locals.newProposal.numberOfNo = 0;
@@ -1237,6 +1277,10 @@ protected:
 
         locals.newProposal.currentQuorumPercent = state.quorumPercent;
         locals.newProposal.currentTotalVotingPower = state.totalVotingPower;
+        for (locals._t = 0; locals._t < 256; locals._t++)
+        {
+            locals.newProposal.url.set(locals._t, input.url.get(locals._t));
+        }
         locals.newProposal.proposedEpoch = qpi.epoch();
         locals.newProposal.numberOfYes = 0;
         locals.newProposal.numberOfNo = 0;
@@ -1595,6 +1639,7 @@ protected:
         output.returnCode = QVAULTLogInfo::QvaultSuccess;
     }
 
+public:
     struct getStakedAmountAndVotingPower_input
     {
         id address;
