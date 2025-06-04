@@ -15,8 +15,8 @@ static constexpr uint32 QVAULT_QCAP_SOLD_AMOUNT = 1652235;
 static constexpr uint64 QVAULT_MAX_REVENUE = 1000000000000ull;
 static constexpr uint64 QVAULT_MIN_REVENUE = 100000000000ull;;
 static const id QVAULT_CONTRACT_ID(QVAULT_CONTRACT_INDEX, 0, 0, 0);
-const id QVAULT_QCAP_ISSUER = ID(_Q, _C, _A, _P, _W, _M, _Y, _R, _S, _H, _L, _B, _J, _H, _S, _T, _T, _Z, _Q, _V, _C, _I, _B, _A, _R, _V, _O, _A, _S, _K, _D, _E, _N, _A, _S, _A, _K, _N, _O, _B, _R, _G, _P, _F, _W, _W, _K, _R, _C, _U, _V, _U, _A, _X, _Y, _E);
-const id QVAULT_adminAddress = ID(_H, _E, _C, _G, _U, _G, _H, _C, _J, _K, _Q, _O, _S, _D, _T, _M, _E, _H, _Q, _Y, _W, _D, _D, _T, _L, _F, _D, _A, _S, _Z, _K, _M, _G, _J, _L, _S, _R, _C, _S, _T, _H, _H, _A, _P, _P, _E, _D, _L, _G, _B, _L, _X, _J, _M, _N, _D);
+const id QVAULT_QCAP_ISSUER = ID(_Y, _R, _P, _H, _H, _S, _U, _E, _E, _B, _S, _A, _X, _B, _Y, _F, _B, _A, _X, _P, _U, _R, _E, _X, _F, _E, _S, _A, _Q, _F, _N, _C, _J, _O, _M, _R, _I, _G, _B, _C, _W, _D, _I, _M, _K, _R, _R, _I, _Z, _T, _K, _P, _O, _J, _F, _H);
+const id QVAULT_adminAddress = ID(_Y, _R, _P, _H, _H, _S, _U, _E, _E, _B, _S, _A, _X, _B, _Y, _F, _B, _A, _X, _P, _U, _R, _E, _X, _F, _E, _S, _A, _Q, _F, _N, _C, _J, _O, _M, _R, _I, _G, _B, _C, _W, _D, _I, _M, _K, _R, _R, _I, _Z, _T, _K, _P, _O, _J, _F, _H);
 
 static unsigned long long random(unsigned long long minValue, unsigned long long maxValue)
 {
@@ -144,18 +144,6 @@ public:
         EXPECT_EQ(AlloP.get(index).distributed, distribute);
     }
 
-    void MSPChecker(uint32 index, id proposer, uint32 shareIndex)
-    {
-        EXPECT_EQ(MSP.get(index).currentQuorumPercent, 670);
-        EXPECT_EQ(MSP.get(index).currentTotalVotingPower, 10000);
-        EXPECT_EQ(MSP.get(index).numberOfNo, 0);
-        EXPECT_EQ(MSP.get(index).numberOfYes, 0);
-        EXPECT_EQ(MSP.get(index).proposedEpoch, 139);
-        EXPECT_EQ(MSP.get(index).proposer, proposer);
-        EXPECT_EQ(MSP.get(index).result, 0);
-        EXPECT_EQ(MSP.get(index).muslimShareIndex, shareIndex);
-    }
-
     void voteInProposalChecker(uint32 proposalId, uint32 proposalType, uint32 numberOfYes, uint32 numberOfNo)
     {
         switch (proposalType)
@@ -188,29 +176,14 @@ public:
             EXPECT_EQ(AlloP.get(proposalId).numberOfYes, numberOfYes);
             EXPECT_EQ(AlloP.get(proposalId).numberOfNo, numberOfNo);
             break;
-        case 8:
-            EXPECT_EQ(MSP.get(proposalId).numberOfYes, numberOfYes);
-            EXPECT_EQ(MSP.get(proposalId).numberOfNo, numberOfNo);
-            break;
-        
         default:
             break;
         }
     }
 
-    void submitMuslimIdChecker(id muslimId, uint64 elementIndex)
-    {
-        EXPECT_EQ(muslimId, muslim.key(elementIndex));
-    }
-
-    void cancelMuslimIdChecker(id muslimId, uint64 elementIndex)
-    {
-        EXPECT_NE(muslimId, muslim.key(elementIndex));
-    }
-
     void POST_INCOMING_TRANSFER_checker(uint64 distributedAmount, uint32 epoch, uint32 shareIndex)
     {
-        EXPECT_EQ(distributedAmount, totalNotMSRevenue);
+        EXPECT_EQ(distributedAmount, totalEpochRevenue);
         EXPECT_EQ(distributedAmount, totalHistoryRevenue);
         EXPECT_EQ(distributedAmount, revenueInQcapPerEpoch.get(epoch));
         EXPECT_EQ(distributedAmount, revenuePerShare.get(shareIndex));
@@ -220,15 +193,14 @@ public:
     {
         EXPECT_EQ(reinvestingFund, div(qxDistributedAmount * reinvestingPermille, 1000ULL));
         EXPECT_EQ(fundForBurn, div(qxDistributedAmount * qcapBurnPermille, 1000ULL));
-        EXPECT_EQ(totalNotMSRevenue, 0);
-        EXPECT_EQ(totalMuslimRevenue, 0);
+        EXPECT_EQ(totalEpochRevenue, 0);
         EXPECT_EQ(proposalCreateFund, 0);
     }
 
     void test()
     {
         EXPECT_EQ(fundForBurn, 34523);
-        EXPECT_EQ(totalNotMSRevenue, 0);
+        EXPECT_EQ(totalEpochRevenue, 0);
     }
 };
 
@@ -373,17 +345,6 @@ public:
         input.proposalId = proposalId;
 
         callFunction(QVAULT_CONTRACT_INDEX, 9, input, output);
-        return output;
-    }
-
-    QVAULT::getMSP_output getMSP(uint32 proposalId) const
-    {
-        QVAULT::getMSP_input input;
-        QVAULT::getMSP_output output;
-
-        input.proposalId = proposalId;
-
-        callFunction(QVAULT_CONTRACT_INDEX, 10, input, output);
         return output;
     }
 
@@ -607,18 +568,6 @@ public:
         return output.returnCode;
     }
 
-    uint32 submitMSP(const id& address, uint32 shareIndex)
-    {
-        QVAULT::submitMSP_input input;
-        QVAULT::submitMSP_output output;
-
-        input.shareIndex = shareIndex;
-
-        invokeUserProcedure(QVAULT_CONTRACT_INDEX, 10, input, output, address, 10000000);
-
-        return output.returnCode;
-    }
-
     uint32 voteInProposal(const id& address, uint64 priceOfIPO, uint32 proposalType, uint32 proposalId, bit yes)
     {
         QVAULT::voteInProposal_input input;
@@ -674,27 +623,6 @@ public:
         invokeUserProcedure(QX_CONTRACT_INDEX, 9, input, output, currentOwner, 0);
 
         return output.transferredNumberOfShares;
-    }
-
-
-    QVAULT::submitMuslimId_output submitMuslimId(const id& address)
-    {
-        QVAULT::submitMuslimId_input input;
-        QVAULT::submitMuslimId_output output;
-
-        invokeUserProcedure(QVAULT_CONTRACT_INDEX, 14, input, output, address, 0);
-
-        return output;
-    }
-
-    QVAULT::cancelMuslimId_output cancelMuslimId(const id& address)
-    {
-        QVAULT::cancelMuslimId_input input;
-        QVAULT::cancelMuslimId_output output;
-
-        invokeUserProcedure(QVAULT_CONTRACT_INDEX, 15, input, output, address, 0);
-
-        return output;
     }
 
     sint64 issueAsset(const id& issuer, uint64 assetName, sint64 numberOfShares, uint64 unitOfMeasurement, sint8 numberOfDecimalPlaces)
@@ -890,11 +818,6 @@ TEST(TestContractQvault, testingAllProceduresAndFunctions)
     EXPECT_EQ(getBalance(QVAULT_CONTRACT_ID), 70000000);
     QvaultV2.getState()->submitAlloPChecker(0, stakers[0], 450, 0, 120, 400);
 
-    increaseEnergy(stakers[0], 10000000);
-    EXPECT_EQ(QvaultV2.submitMSP(stakers[0], 2), QVAULTLogInfo::QvaultSuccess);
-    EXPECT_EQ(getBalance(QVAULT_CONTRACT_ID), 80000000);
-    QvaultV2.getState()->MSPChecker(0, stakers[0], 2);
-
     EXPECT_EQ(QvaultV2.voteInProposal(stakers[0], 100000000, 1, 0, 1), QVAULTLogInfo::QvaultSuccess);
     QvaultV2.getState()->voteInProposalChecker(0, 1, 10000, 0);
 
@@ -907,9 +830,6 @@ TEST(TestContractQvault, testingAllProceduresAndFunctions)
     EXPECT_EQ(QvaultV2.voteInProposal(stakers[0], 100000000, 7, 0, 1), QVAULTLogInfo::QvaultSuccess);
     QvaultV2.getState()->voteInProposalChecker(0, 7, 10000, 0);
 
-    EXPECT_EQ(QvaultV2.voteInProposal(stakers[0], 100000000, 8, 0, 1), QVAULTLogInfo::QvaultSuccess);
-    QvaultV2.getState()->voteInProposalChecker(0, 8, 10000, 0);
-
     Asset qcapShare;
     qcapShare.assetName = qcapAssetName;
     qcapShare.issuer = QVAULT_QCAP_ISSUER;
@@ -917,11 +837,6 @@ TEST(TestContractQvault, testingAllProceduresAndFunctions)
     EXPECT_EQ(QvaultV2.QXTransferShareManagementRights(QVAULT_QCAP_ISSUER, qcapAssetName, QVAULT_CONTRACT_INDEX, 10000, QVAULT_CONTRACT_ID), 10000);
     increaseEnergy(QVAULT_QCAP_ISSUER, 1000000);
     EXPECT_EQ(QvaultV2.TransferShareManagementRights(QVAULT_CONTRACT_ID, qcapShare, 10000, QX_CONTRACT_INDEX), 10000);
-
-    uint64 elementIndex = QvaultV2.submitMuslimId(stakers[0]).elementIndex;
-    QvaultV2.getState()->submitMuslimIdChecker(stakers[0], elementIndex);
-    QvaultV2.cancelMuslimId(stakers[0]);
-    QvaultV2.getState()->cancelMuslimIdChecker(stakers[0], elementIndex);
 
     std::vector<std::pair<m256i, unsigned int>> qxSharesHolers{{QVAULT_CONTRACT_ID, 676}};
     issueContractShares(QX_CONTRACT_INDEX, qxSharesHolers);
