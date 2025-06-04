@@ -51,7 +51,7 @@ static_assert(AUTO_FORCE_NEXT_TICK_THRESHOLD* TARGET_TICK_DURATION >= PEER_REFRE
 #define START_NETWORK_FROM_SCRATCH 1
 
 // Addons: If you don't know it, leave it 0.
-#define ADDON_TX_STATUS_REQUEST 0
+#define ADDON_TX_STATUS_REQUEST 1
 
 //////////////////////////////////////////////////////////////////////////
 // Config options that should NOT be changed by operators
@@ -61,7 +61,7 @@ static_assert(AUTO_FORCE_NEXT_TICK_THRESHOLD* TARGET_TICK_DURATION >= PEER_REFRE
 #define VERSION_C 0
 
 // Epoch and initial tick for node startup
-#define EPOCH 161
+#define EPOCH 164
 #define TICK 25600000
 
 #define ARBITRATOR "MEFKYFCDXDUILCAJKOIKWQAPENJDUHSSYPBRWFOTLALILAYWQFDSITJELLHG"
@@ -102,4 +102,4 @@ static unsigned short CUSTOM_MINING_CACHE_FILE_NAME[] = L"custom_mining_cache???
 #define STACK_SIZE 4194304
 #define TRACK_MAX_STACK_BUFFER_SIZE
 
-#define TESTNET_EPOCH_DURATION 3000
+#define TESTNET_EPOCH_DURATION 2000

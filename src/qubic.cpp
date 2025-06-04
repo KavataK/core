@@ -4460,6 +4460,11 @@ static void broadcastTickVotes()
         // - if own votes don't get echoed back, that indicates this node has internet/topo issue, and need to reissue vote (F9)
         // - all votes need to be processed in a single place of code (for further handling)
         // - all votes are treated equally (own votes and their votes)
+        ts.ticks.acquireLock(broadcastTick.tick.computorIndex);
+        Tick* tsTick = ts.ticks.getByTickInCurrentEpoch(broadcastTick.tick.tick) + broadcastTick.tick.computorIndex;
+        // Copy the sent tick to the tick storage
+        bs->CopyMem(tsTick, &broadcastTick.tick, sizeof(Tick));
+        ts.ticks.releaseLock(broadcastTick.tick.computorIndex);
     }
 }
 
