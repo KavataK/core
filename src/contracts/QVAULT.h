@@ -1924,7 +1924,7 @@ public:
         state.QCAP_ISSUER = ID(_Q, _C, _A, _P, _V, _R, _C, _W, _P, _Z, _E, _O, _V, _E, _N, _K, _P, _J, _N, _W, _X, _E, _Y, _W, _F, _C, _Q, _D, _V, _I, _F, _S, _V, _B, _H, _K, _U, _Y, _M, _J, _O, _D, _H, _M, _J, _Q, _C, _R, _Q, _V, _O, _A, _N, _A, _D, _C);
         state.adminAddress = ID(_A, _D, _M, _I, _N, _O, _J, _T, _S, _I, _L, _H, _V, _F, _P, _W, _T, _T, _C, _N, _E, _K, _X, _N, _F, _O, _K, _C, _M, _V, _G, _P, _R, _J, _P, _E, _K, _L, _S, _Z, _G, _F, _B, _P, _T, _S, _O, _B, _E, _N, _Q, _X, _M, _C, _P, _D);
         state.qcapSoldAmount = 1652235;
-        state.transferRightsFee = 1000000;
+        state.transferRightsFee = 100;
         state.quorumPercent = 670;
         state.devPermille = 20;
         state.qcapBurnPermille = 0;
