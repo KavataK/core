@@ -3476,15 +3476,11 @@ static void endEpoch()
                 gRevenueComponents.txScore[i] = revenueScore[i];
                 gRevenueComponents.customMiningScore[i] = gCustomMiningSharesCounter.getSharesCount(i);
             }
-
-            computeRevWithCustomMining(
-                gRevenueScoreWithCustomMining.txScore,
-                gRevenueScoreWithCustomMining.voteCount,
-                gRevenueScoreWithCustomMining.customMiningSharesCount,
-                gRevenueScoreWithCustomMining.currentIntermediateScore,
-                gRevenueScoreWithCustomMining.currentRev,
-                gRevenueScoreWithCustomMining.customMiningIntermediateScore,
-                gRevenueScoreWithCustomMining.customMiningRev);
+            computeRevenue(
+                gRevenueComponents.txScore,
+                gRevenueComponents.voteScore,
+                gRevenueComponents.customMiningScore,
+                gRevenueComponents.revenue);
         }
 
 
