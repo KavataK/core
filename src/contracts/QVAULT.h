@@ -597,7 +597,7 @@ protected:
         locals.newProposal.numberOfYes = 0;
         locals.newProposal.numberOfNo = 0;
         locals.newProposal.proposer = qpi.invocator();
-        locals.newProposal.result = 0;
+        locals.newProposal.result = 4;
 
         state.GP.set(state.numberOfGP++, locals.newProposal);
         output.returnCode = QVAULTLogInfo::QvaultSuccess;
@@ -670,7 +670,7 @@ protected:
         locals.newProposal.numberOfYes = 0;
         locals.newProposal.numberOfNo = 0;
         locals.newProposal.proposer = qpi.invocator();
-        locals.newProposal.result = 0;
+        locals.newProposal.result = 4;
         
         locals.newProposal.newQuorumPercent = input.newQuorumPercent;
 
@@ -754,7 +754,7 @@ protected:
         locals.newProposal.numberOfYes = 0;
         locals.newProposal.numberOfNo = 0;
         locals.newProposal.proposer = qpi.invocator();
-        locals.newProposal.result = 0;
+        locals.newProposal.result = 4;
         locals.newProposal.assignedFund = 0;
         
         locals.newProposal.ipoContractIndex = input.ipoContractIndex;
@@ -845,7 +845,7 @@ protected:
         locals.newProposal.numberOfYes = 0;
         locals.newProposal.numberOfNo = 0;
         locals.newProposal.proposer = qpi.invocator();
-        locals.newProposal.result = 0;
+        locals.newProposal.result = 4;
         
         locals.newProposal.assignedFundPerEpoch = input.amountPerEpoch;
         locals.newProposal.amountOfInvestPerEpoch = input.amountPerEpoch;
@@ -972,7 +972,7 @@ protected:
         locals.newProposal.numberOfYes = 0;
         locals.newProposal.numberOfNo = 0;
         locals.newProposal.proposer = qpi.invocator();
-        locals.newProposal.result = 0;
+        locals.newProposal.result = 4;
         
         locals.newProposal.restSaleAmount = input.amountOfQcap;
         locals.newProposal.amountOfQcap = input.amountOfQcap;
@@ -1025,7 +1025,7 @@ protected:
         locals.newProposal.numberOfYes = 0;
         locals.newProposal.numberOfNo = 0;
         locals.newProposal.proposer = qpi.invocator();
-        locals.newProposal.result = 0;
+        locals.newProposal.result = 4;
         
         locals.newProposal.shareIndex = input.indexOfShare;
         locals.newProposal.amountOfShare = input.amountOfShare;
@@ -1142,7 +1142,7 @@ protected:
         locals.newProposal.numberOfYes = 0;
         locals.newProposal.numberOfNo = 0;
         locals.newProposal.proposer = qpi.invocator();
-        locals.newProposal.result = 0;
+        locals.newProposal.result = 4;
         
         locals.newProposal.burnQcap = input.burn;
         locals.newProposal.distributed = input.distribute;
@@ -1856,7 +1856,7 @@ public:
         locals.numberOfDuplicatedPossesor = (uint32)div(locals.numberOfDuplicatedPossesor * 1ULL, 2ULL);
 
         output.numberOfQcapHolder = locals.count - locals.numberOfDuplicatedPossesor;
-        output.avgAmount = (uint32)div(qpi.numberOfShares(locals.QCAPId) - qpi.numberOfPossessedShares(QVAULT_QCAP_ASSETNAME, state.QCAP_ISSUER, SELF, SELF, QX_CONTRACT_INDEX, QX_CONTRACT_INDEX) - qpi.numberOfPossessedShares(QVAULT_QCAP_ASSETNAME, state.QCAP_ISSUER, SELF, SELF, QVAULT_CONTRACT_INDEX, QVAULT_CONTRACT_INDEX) * 1ULL, output.numberOfQcapHolder * 1ULL);
+        output.avgAmount = (uint32)div(qpi.numberOfShares(locals.QCAPId) - qpi.numberOfShares(locals.QCAPId, AssetOwnershipSelect::byOwner(SELF), AssetPossessionSelect::byPossessor(SELF)) + state.totalStakedQcapAmount * 1ULL, output.numberOfQcapHolder * 1ULL);
     }
 
     struct getAmountForQearnInUpcomingEpoch_input
