@@ -270,6 +270,9 @@
       <Filter>platform</Filter>
     </ClInclude>
     <ClInclude Include="revenue.h" />
+    <ClInclude Include="contracts\VottunBridge.h">
+      <Filter>contracts</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="platform">

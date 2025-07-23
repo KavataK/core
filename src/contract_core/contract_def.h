@@ -208,6 +208,16 @@ struct __FunctionOrProcedureBeginEndGuard
 
 #endif
 
+#undef CONTRACT_INDEX
+#undef CONTRACT_STATE_TYPE
+#undef CONTRACT_STATE2_TYPE
+
+#define VOTTUNBRIDGE_CONTRACT_INDEX 15
+#define CONTRACT_INDEX VOTTUNBRIDGE_CONTRACT_INDEX
+#define CONTRACT_STATE_TYPE VOTTUNBRIDGE
+#define CONTRACT_STATE2_TYPE VOTTUNBRIDGE2
+#include "contracts/VottunBridge.h"
+
 // new contracts should be added above this line
 
 #ifdef INCLUDE_CONTRACT_TEST_EXAMPLES
@@ -307,6 +317,7 @@ constexpr struct ContractDescription
 #ifndef NO_NOST
     {"NOST", 172, 10000, sizeof(NOST)}, // proposal in epoch 170, IPO in 171, construction and first use in 172
 #endif
+    {"VOTTUN", 173, 10000, sizeof(VOTTUNBRIDGE)},
     // new contracts should be added above this line
 #ifdef INCLUDE_CONTRACT_TEST_EXAMPLES
     {"TESTEXA", 138, 10000, sizeof(IPO)},
@@ -412,6 +423,7 @@ static void initializeContracts()
 #ifndef NO_NOST
     REGISTER_CONTRACT_FUNCTIONS_AND_PROCEDURES(NOST);
 #endif
+    REGISTER_CONTRACT_FUNCTIONS_AND_PROCEDURES(VOTTUNBRIDGE);
     // new contracts should be added above this line
 #ifdef INCLUDE_CONTRACT_TEST_EXAMPLES
     REGISTER_CONTRACT_FUNCTIONS_AND_PROCEDURES(TESTEXA);
