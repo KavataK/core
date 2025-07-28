@@ -2505,7 +2505,8 @@ protected:
 	INITIALIZE()
 	{
 		state.cfbIssuer = ID(_C, _F, _B, _M, _E, _M, _Z, _O, _I, _D, _E, _X, _Q, _A, _U, _X, _Y, _Y, _S, _Z, _I, _U, _R, _A, _D, _Q, _L, _A, _P, _W, _P, _M, _N, _J, _X, _Q, _S, _N, _V, _Q, _Z, _A, _H, _Y, _V, _O, _P, _Y, _U, _K, _K, _J, _B, _J, _U, _C);
-		state.marketPlaceOwner = ID(_R, _K, _D, _H, _C, _M, _R, _J, _Y, _C, _G, _K, _P, _D, _U, _Y, _R, _X, _G, _D, _Y, _Z, _C, _I, _Z, _I, _T, _A, _H, _Y, _O, _V, _G, _I, _U, _T, _K, _N, _D, _T, _E, _H, _P, _C, _C, _L, _W, _L, _Z, _X, _S, _H, _N, _F, _P, _D);
+//		state.marketPlaceOwner = ID(_R, _K, _D, _H, _C, _M, _R, _J, _Y, _C, _G, _K, _P, _D, _U, _Y, _R, _X, _G, _D, _Y, _Z, _C, _I, _Z, _I, _T, _A, _H, _Y, _O, _V, _G, _I, _U, _T, _K, _N, _D, _T, _E, _H, _P, _C, _C, _L, _W, _L, _Z, _X, _S, _H, _N, _F, _P, _D);
+		state.marketPlaceOwner = ID(_M, _I, _G, _F, _H, _Z, _M, _G, _C, _T, _B, _G, _R, _C, _S, _X, _C, _N, _W, _A, _D, _T, _V, _Q, _X, _H, _W, _B, _K, _J, _I, _Q, _U, _P, _Q, _R, _D, _A, _P, _E, _F, _C, _N, _O, _G, _S, _V, _D, _N, _V, _L, _U, _F, _N, _B, _B);
 		state.transferRightsFee = 1000000;
 
 	}
