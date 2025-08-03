@@ -62,7 +62,7 @@ static_assert(AUTO_FORCE_NEXT_TICK_THRESHOLD* TARGET_TICK_DURATION >= PEER_REFRE
 #define VERSION_C 3
 
 // Epoch and initial tick for node startup
-#define EPOCH 162
+#define EPOCH 165
 #define TICK 25560000
 
 
