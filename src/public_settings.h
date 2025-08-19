@@ -109,7 +109,7 @@ static unsigned long long gFullExternalComputationTimes[][2] =
 {
     {0x040C0000ULL, 0x050C0000ULL}, // Thu 12:00:00 - Fri 12:00:00
     {0x060C0000ULL, 0x000C0000ULL}, // Sat 12:00:00 - Sun 12:00:00
-    {0x010C0000ULL, 0x020C0000ULL}, // Mon 12:00:00 - Tue 12:00:00
+    {0x000D0000ULL, 0x010C0000ULL}, // Mon 12:00:00 - Tue 12:00:00
 };
 
 #define STACK_SIZE 4194304
