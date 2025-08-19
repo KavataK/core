@@ -60,8 +60,8 @@ static_assert(AUTO_FORCE_NEXT_TICK_THRESHOLD* TARGET_TICK_DURATION >= PEER_REFRE
 #define VERSION_C 0
 
 // Epoch and initial tick for node startup
-#define EPOCH 174
-#define TICK 31231000
+#define EPOCH 175
+#define TICK 31235000
 #define TICK_IS_FIRST_TICK_OF_EPOCH 1 // Set to 0 if the network is restarted during the EPOCH with a new initial TICK
 
 #define ARBITRATOR "MEFKYFCDXDUILCAJKOIKWQAPENJDUHSSYPBRWFOTLALILAYWQFDSITJELLHG"
@@ -115,4 +115,4 @@ static unsigned long long gFullExternalComputationTimes[][2] =
 #define STACK_SIZE 4194304
 #define TRACK_MAX_STACK_BUFFER_SIZE
 
-#define TESTNET_EPOCH_DURATION 3000
+#define TESTNET_EPOCH_DURATION 100
