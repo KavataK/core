@@ -93,7 +93,9 @@ static constexpr unsigned int SOLUTION_THRESHOLD_DEFAULT = NUMBER_OF_OUTPUT_NEUR
 // include commonly needed definitions
 #include "network_messages/common_def.h"
 
-#define MAX_NUMBER_OF_TICKS_PER_EPOCH (((((60 * 60 * 24 * 1) / (TARGET_TICK_DURATION / 1000)) + NUMBER_OF_COMPUTORS - 1) / NUMBER_OF_COMPUTORS) * NUMBER_OF_COMPUTORS)
+#define TESTNET_EPOCH_DURATION 3000
+
+#define MAX_NUMBER_OF_TICKS_PER_EPOCH TESTNET_EPOCH_DURATION
 #define FIRST_TICK_TRANSACTION_OFFSET sizeof(unsigned long long)
 #define MAX_TRANSACTION_SIZE (MAX_INPUT_SIZE + sizeof(Transaction) + SIGNATURE_SIZE)
 
@@ -114,4 +116,4 @@ static unsigned long long gFullExternalComputationTimes[][2] =
 #define STACK_SIZE 4194304
 #define TRACK_MAX_STACK_BUFFER_SIZE
 
-#define TESTNET_EPOCH_DURATION 3000
+
