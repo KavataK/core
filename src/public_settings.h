@@ -23,10 +23,6 @@
 // Number of ticks from prior epoch that are kept after seamless epoch transition. These can be requested after transition.
 #define TICKS_TO_KEEP_FROM_PRIOR_EPOCH 100
 
-<<<<<<< HEAD
-#define TARGET_TICK_DURATION 1000
-#define TRANSACTION_SPARSENESS 1
-=======
 // The tick duration used for timing and scheduling logic.
 #define TARGET_TICK_DURATION 7000
 
@@ -34,7 +30,6 @@
 // This determines the memory footprint of the application.
 #define TICK_DURATION_FOR_ALLOCATION_MS 7000
 #define TRANSACTION_SPARSENESS 4
->>>>>>> a5d22a2 (testnet config 2025-09-22)
 
 // Below are 2 variables that are used for auto-F5 feature:
 #define AUTO_FORCE_NEXT_TICK_THRESHOLD 20ULL // Multiplier of TARGET_TICK_DURATION for the system to detect "F5 case" | set to 0 to disable
@@ -104,13 +99,9 @@ static constexpr unsigned int SOLUTION_THRESHOLD_DEFAULT = NUMBER_OF_OUTPUT_NEUR
 // include commonly needed definitions
 #include "network_messages/common_def.h"
 
-<<<<<<< HEAD
-#define MAX_NUMBER_OF_TICKS_PER_EPOCH (((((60 * 60 * 24 * 7) / (TARGET_TICK_DURATION / 1000)) + NUMBER_OF_COMPUTORS - 1) / NUMBER_OF_COMPUTORS) * NUMBER_OF_COMPUTORS)
-=======
 #define TESTNET_EPOCH_DURATION 3000
 
 #define MAX_NUMBER_OF_TICKS_PER_EPOCH (TESTNET_EPOCH_DURATION + 5)
->>>>>>> a5d22a2 (testnet config 2025-09-22)
 #define FIRST_TICK_TRANSACTION_OFFSET sizeof(unsigned long long)
 #define MAX_TRANSACTION_SIZE (MAX_INPUT_SIZE + sizeof(Transaction) + SIGNATURE_SIZE)
 
@@ -123,9 +114,9 @@ static_assert(INTERNAL_COMPUTATIONS_INTERVAL >= NUMBER_OF_COMPUTORS, "Internal c
 // DoW: Day of the week 0: Sunday, 1 = Monday ...
 static unsigned int gFullExternalComputationTimes[][2] =
 {
-    {0x040C0000U, 0x050C0000U}, // Thu 12:00:00 - Fri 12:00:00
-    {0x060C0000U, 0x000C0000U}, // Sat 12:00:00 - Sun 12:00:00
-    {0x010C0000U, 0x020C0000U}, // Mon 12:00:00 - Tue 12:00:00
+    {0x040C0000U, 0x040C1E00U}, // Thu 12:00:00 - Fri 12:00:00
+    {0x060C0000U, 0x060C1E00U}, // Sat 12:00:00 - Sun 12:00:00
+    {0x010C0000U, 0x010C1E00U}, // Mon 12:00:00 - Tue 12:00:00
 };
 
 #define STACK_SIZE 4194304
