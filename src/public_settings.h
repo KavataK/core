@@ -62,8 +62,8 @@ static_assert(AUTO_FORCE_NEXT_TICK_THRESHOLD* TARGET_TICK_DURATION >= PEER_REFRE
 #define VERSION_C 3
 
 // Epoch and initial tick for node startup
-#define EPOCH 170
-#define TICK 28560000
+#define EPOCH 184
+#define TICK 35000000
 
 
 #define ARBITRATOR "MEFKYFCDXDUILCAJKOIKWQAPENJDUHSSYPBRWFOTLALILAYWQFDSITJELLHG"
@@ -94,7 +94,9 @@ static unsigned short CUSTOM_MINING_CACHE_FILE_NAME[] = L"custom_mining_cache???
 // include commonly needed definitions
 #include "network_messages/common_def.h"
 
-#define MAX_NUMBER_OF_TICKS_PER_EPOCH (((((60 * 60 * 24 * 3) / (TARGET_TICK_DURATION / 1000)) + NUMBER_OF_COMPUTORS - 1) / NUMBER_OF_COMPUTORS) * NUMBER_OF_COMPUTORS)
+#define TESTNET_EPOCH_DURATION 1000
+
+#define MAX_NUMBER_OF_TICKS_PER_EPOCH (TESTNET_EPOCH_DURATION + 5)
 #define FIRST_TICK_TRANSACTION_OFFSET sizeof(unsigned long long)
 #define MAX_TRANSACTION_SIZE (MAX_INPUT_SIZE + sizeof(Transaction) + SIGNATURE_SIZE)
 
@@ -105,4 +107,3 @@ static unsigned short CUSTOM_MINING_CACHE_FILE_NAME[] = L"custom_mining_cache???
 #define STACK_SIZE 4194304
 #define TRACK_MAX_STACK_BUFFER_SIZE
 
-#define TESTNET_EPOCH_DURATION 1000
