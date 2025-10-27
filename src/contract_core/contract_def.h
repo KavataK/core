@@ -278,7 +278,17 @@ constexpr struct ContractDescription
     {"QEARN", 137, 10000, sizeof(QEARN)}, // proposal in epoch 135, IPO in 136, construction in 137 / first donation after END_EPOCH, first round in epoch 138
     {"QVAULT", 184, 10000, sizeof(QVAULT)}, // proposal in epoch 136, IPO in 137, construction and first use in 138
     {"MSVAULT", 149, 10000, sizeof(MSVAULT)}, // proposal in epoch 147, IPO in 148, construction and first use in 149
-    {"QBAY", 154, 10000, sizeof(QBAY)}, // proposal in epoch 152, IPO in 153, construction and first use in 154
+    {"Q188", 188, 10000, sizeof(IPO)},
+    {"Q189", 189, 10000, sizeof(IPO)},
+    {"Q190", 190, 10000, sizeof(IPO)},
+    {"Q190", 190, 10000, sizeof(IPO)},
+    {"Q191", 191, 10000, sizeof(IPO)},
+    {"Q192", 192, 10000, sizeof(IPO)},
+    {"Q193", 193, 10000, sizeof(IPO)},
+    {"Q194", 194, 10000, sizeof(IPO)},
+    {"Q195", 195, 10000, sizeof(IPO)},
+    {"Q196", 196, 10000, sizeof(IPO)},
+    {"Q197", 197, 10000, sizeof(IPO)},// proposal in epoch 152, IPO in 153, construction and first use in 154
     // new contracts should be added above this line
 #ifdef INCLUDE_CONTRACT_TEST_EXAMPLES
     {"TESTEXA", 138, 10000, sizeof(IPO)},
