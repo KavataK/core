@@ -2881,7 +2881,7 @@ public:
 
 	INITIALIZE()
     {
-        state.QCAP_ISSUER = ID(_Q, _C, _A, _P, _W, _M, _Y, _R, _S, _H, _L, _B, _J, _H, _S, _T, _T, _Z, _Q, _V, _C, _I, _B, _A, _R, _V, _O, _A, _S, _K, _D, _E, _N, _A, _S, _A, _K, _N, _O, _B, _R, _G, _P, _F, _W, _W, _K, _R, _C, _U, _V, _U, _A, _X, _Y, _E);
+        state.QCAP_ISSUER = ID(_Q, _C, _A, _P, _V, _R, _C, _W, _P, _Z, _E, _O, _V, _E, _N, _K, _P, _J, _N, _W, _X, _E, _Y, _W, _F, _C, _Q, _D, _V, _I, _F, _S, _V, _B, _H, _K, _U, _Y, _M, _J, _O, _D, _H, _M, _J, _Q, _C, _R, _Q, _V, _O, _A, _N, _A, _D, _C);
         state.qcapSoldAmount = 1652235;
         state.transferRightsFee = 100;
         state.quorumPercent = 670;
