@@ -2882,12 +2882,12 @@ public:
 	INITIALIZE()
     {
         state.QCAP_ISSUER = ID(_Q, _C, _A, _P, _V, _R, _C, _W, _P, _Z, _E, _O, _V, _E, _N, _K, _P, _J, _N, _W, _X, _E, _Y, _W, _F, _C, _Q, _D, _V, _I, _F, _S, _V, _B, _H, _K, _U, _Y, _M, _J, _O, _D, _H, _M, _J, _Q, _C, _R, _Q, _V, _O, _A, _N, _A, _D, _C);
-        state.qcapSoldAmount = 1652235;
+        state.qcapSoldAmount = 1909423;
         state.transferRightsFee = 100;
         state.quorumPercent = 670;
         state.qcapBurnPermille = 0;
         state.burnPermille = 0;
-        state.QCAPHolderPermille = 500;
+        state.QCAPHolderPermille = 520;
         state.reinvestingPermille = 450;
         state.shareholderDividend = 30;
 

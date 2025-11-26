@@ -58,7 +58,7 @@ static_assert(AUTO_FORCE_NEXT_TICK_THRESHOLD* TARGET_TICK_DURATION >= PEER_REFRE
 #define START_NETWORK_FROM_SCRATCH 1
 
 // Addons: If you don't know it, leave it 0.
-#define ADDON_TX_STATUS_REQUEST 0
+#define ADDON_TX_STATUS_REQUEST 1
 
 //////////////////////////////////////////////////////////////////////////
 // Config options that should NOT be changed by operators
