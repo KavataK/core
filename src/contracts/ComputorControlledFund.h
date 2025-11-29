@@ -172,33 +172,33 @@ public:
 		}
 
 		// Validate subscription data if provided
-		// if (input.isSubscription)
-		// {
-		// 	// Validate weeks per period (must be at least 1)
-		// 	if (input.weeksPerPeriod == 0)
-		// 	{
-		// 		output.proposalIndex = INVALID_PROPOSAL_INDEX;
-		// 		return;
-		// 	}
+		if (input.isSubscription)
+		{
+			// Validate weeks per period (must be at least 1)
+			if (input.weeksPerPeriod == 0)
+			{
+				output.proposalIndex = INVALID_PROPOSAL_INDEX;
+				return;
+			}
 
-		// 	// Validate start epoch
-		// 	if (input.startEpoch < qpi.epoch())
-		// 	{
-		// 		output.proposalIndex = INVALID_PROPOSAL_INDEX;
-		// 		return;
-		// 	}
+			// Validate start epoch
+			if (input.startEpoch < qpi.epoch())
+			{
+				output.proposalIndex = INVALID_PROPOSAL_INDEX;
+				return;
+			}
 
-		// 	// Calculate total epochs for this subscription
-		// 	// 1 week = 1 epoch
-		// 	locals.totalEpochsForSubscription = input.numberOfPeriods * input.weeksPerPeriod;
+			// Calculate total epochs for this subscription
+			// 1 week = 1 epoch
+			locals.totalEpochsForSubscription = input.numberOfPeriods * input.weeksPerPeriod;
 
-		// 	// Check against total allowed subscription time range
-		// 	if (locals.totalEpochsForSubscription > state.maxSubscriptionEpochs)
-		// 	{
-		// 		output.proposalIndex = INVALID_PROPOSAL_INDEX;
-		// 		return;
-		// 	}
-		// }
+			// Check against total allowed subscription time range
+			if (locals.totalEpochsForSubscription > state.maxSubscriptionEpochs)
+			{
+				output.proposalIndex = INVALID_PROPOSAL_INDEX;
+				return;
+			}
+		}
 
 		// Try to set proposal (checks originators rights and general validity of input proposal)
 		output.proposalIndex = qpi(state.proposals).setProposal(qpi.originator(), input.proposal);
