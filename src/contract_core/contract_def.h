@@ -181,8 +181,6 @@
 #define CONTRACT_STATE2_TYPE QBOND2
 #include "contracts/QBond.h"
 
-#ifndef NO_QIP
-
 #undef CONTRACT_INDEX
 #undef CONTRACT_STATE_TYPE
 #undef CONTRACT_STATE2_TYPE
@@ -193,7 +191,115 @@
 #define CONTRACT_STATE2_TYPE QIP2
 #include "contracts/QIP.h"
 
-#endif
+#undef CONTRACT_INDEX
+#undef CONTRACT_STATE_TYPE
+#undef CONTRACT_STATE2_TYPE
+
+#define Q1901_CONTRACT_INDEX 19
+#define CONTRACT_INDEX Q1901_CONTRACT_INDEX
+#define CONTRACT_STATE_TYPE RANDOM
+#define CONTRACT_STATE2_TYPE RANDOM2
+
+
+#undef CONTRACT_INDEX
+#undef CONTRACT_STATE_TYPE
+#undef CONTRACT_STATE2_TYPE
+
+#define Q1902_CONTRACT_INDEX 20
+#define CONTRACT_INDEX Q1902_CONTRACT_INDEX
+#define CONTRACT_STATE_TYPE RANDOM
+#define CONTRACT_STATE2_TYPE RANDOM2
+
+
+#undef CONTRACT_INDEX
+#undef CONTRACT_STATE_TYPE
+#undef CONTRACT_STATE2_TYPE
+
+#define Q191_CONTRACT_INDEX 21
+#define CONTRACT_INDEX Q191_CONTRACT_INDEX
+#define CONTRACT_STATE_TYPE RANDOM
+#define CONTRACT_STATE2_TYPE RANDOM2
+
+
+#undef CONTRACT_INDEX
+#undef CONTRACT_STATE_TYPE
+#undef CONTRACT_STATE2_TYPE
+
+#define Q192_CONTRACT_INDEX 22
+#define CONTRACT_INDEX Q192_CONTRACT_INDEX
+#define CONTRACT_STATE_TYPE RANDOM
+#define CONTRACT_STATE2_TYPE RANDOM2
+
+
+#undef CONTRACT_INDEX
+#undef CONTRACT_STATE_TYPE
+#undef CONTRACT_STATE2_TYPE
+
+#define Q193_CONTRACT_INDEX 23
+#define CONTRACT_INDEX Q193_CONTRACT_INDEX
+#define CONTRACT_STATE_TYPE RANDOM
+#define CONTRACT_STATE2_TYPE RANDOM2
+
+
+#undef CONTRACT_INDEX
+#undef CONTRACT_STATE_TYPE
+#undef CONTRACT_STATE2_TYPE
+
+#define Q194_CONTRACT_INDEX 24
+#define CONTRACT_INDEX Q194_CONTRACT_INDEX
+#define CONTRACT_STATE_TYPE RANDOM
+#define CONTRACT_STATE2_TYPE RANDOM2
+
+
+#undef CONTRACT_INDEX
+#undef CONTRACT_STATE_TYPE
+#undef CONTRACT_STATE2_TYPE
+
+#define Q195_CONTRACT_INDEX 25
+#define CONTRACT_INDEX Q195_CONTRACT_INDEX
+#define CONTRACT_STATE_TYPE RANDOM
+#define CONTRACT_STATE2_TYPE RANDOM2
+
+
+#undef CONTRACT_INDEX
+#undef CONTRACT_STATE_TYPE
+#undef CONTRACT_STATE2_TYPE
+
+#define Q196_CONTRACT_INDEX 26
+#define CONTRACT_INDEX Q196_CONTRACT_INDEX
+#define CONTRACT_STATE_TYPE RANDOM
+#define CONTRACT_STATE2_TYPE RANDOM2
+
+
+#undef CONTRACT_INDEX
+#undef CONTRACT_STATE_TYPE
+#undef CONTRACT_STATE2_TYPE
+
+#define Q1971_CONTRACT_INDEX 27
+#define CONTRACT_INDEX Q1971_CONTRACT_INDEX
+#define CONTRACT_STATE_TYPE RANDOM
+#define CONTRACT_STATE2_TYPE RANDOM2
+
+
+#undef CONTRACT_INDEX
+#undef CONTRACT_STATE_TYPE
+#undef CONTRACT_STATE2_TYPE
+
+#define Q1972_CONTRACT_INDEX 28
+#define CONTRACT_INDEX Q1972_CONTRACT_INDEX
+#define CONTRACT_STATE_TYPE RANDOM
+#define CONTRACT_STATE2_TYPE RANDOM2
+
+
+#undef CONTRACT_INDEX
+#undef CONTRACT_STATE_TYPE
+#undef CONTRACT_STATE2_TYPE
+
+#define Q199_CONTRACT_INDEX 29
+#define CONTRACT_INDEX Q199_CONTRACT_INDEX
+#define CONTRACT_STATE_TYPE RANDOM
+#define CONTRACT_STATE2_TYPE RANDOM2
+
 
 // new contracts should be added above this line
 
@@ -289,7 +395,7 @@ constexpr struct ContractDescription
     {"SWATCH", 123, 10000, sizeof(IPO)},
     {"CCF", 127, 10000, sizeof(CCF)}, // proposal in epoch 125, IPO in 126, construction and first use in 127
     {"QEARN", 137, 10000, sizeof(QEARN)}, // proposal in epoch 135, IPO in 136, construction in 137 / first donation after END_EPOCH, first round in epoch 138
-    {"QVAULT", 138, 10000, sizeof(IPO)}, // proposal in epoch 136, IPO in 137, construction and first use in 138
+    {"QVAULT", 187, 10000, sizeof(QVAULT)}, // proposal in epoch 136, IPO in 137, construction and first use in 138
     {"MSVAULT", 149, 10000, sizeof(MSVAULT)}, // proposal in epoch 147, IPO in 148, construction and first use in 149
     {"QBAY", 154, 10000, sizeof(QBAY)}, // proposal in epoch 152, IPO in 153, construction and first use in 154
     {"QSWAP", 171, 10000, sizeof(QSWAP)}, // proposal in epoch 169, IPO in 170, construction and first use in 171
@@ -297,9 +403,19 @@ constexpr struct ContractDescription
     {"QDRAW", 179, 10000, sizeof(QDRAW)}, // proposal in epoch 177, IPO in 178, construction and first use in 179
     {"RL", 182, 10000, sizeof(RL)}, // proposal in epoch 180, IPO in 181, construction and first use in 182
     {"QBOND", 182, 10000, sizeof(QBOND)}, // proposal in epoch 180, IPO in 181, construction and first use in 182
-#ifndef NO_QIP
     {"QIP", 189, 10000, sizeof(QIP)}, // proposal in epoch 187, IPO in 188, construction and first use in 189
-#endif
+    {"Q1901", 190, 10000, sizeof(IPO)},
+    {"Q1902", 190, 10000, sizeof(IPO)},
+    {"Q191", 191, 10000, sizeof(IPO)},
+    {"Q192", 192, 10000, sizeof(IPO)},
+    {"Q193", 193, 10000, sizeof(IPO)},
+    {"Q194", 194, 10000, sizeof(IPO)},
+    {"Q195", 195, 10000, sizeof(IPO)},
+    {"Q196", 196, 10000, sizeof(IPO)},
+    {"Q1971", 197, 10000, sizeof(IPO)},
+    {"Q1972", 197, 10000, sizeof(IPO)},
+    {"Q199", 199, 10000, sizeof(IPO)},
+
     // new contracts should be added above this line
 #ifdef INCLUDE_CONTRACT_TEST_EXAMPLES
     {"TESTEXA", 138, 10000, sizeof(TESTEXA)},
@@ -412,9 +528,7 @@ static void initializeContracts()
     REGISTER_CONTRACT_FUNCTIONS_AND_PROCEDURES(QDRAW);
     REGISTER_CONTRACT_FUNCTIONS_AND_PROCEDURES(RL);
     REGISTER_CONTRACT_FUNCTIONS_AND_PROCEDURES(QBOND);
-#ifndef NO_QIP
     REGISTER_CONTRACT_FUNCTIONS_AND_PROCEDURES(QIP);
-#endif
     // new contracts should be added above this line
 #ifdef INCLUDE_CONTRACT_TEST_EXAMPLES
     REGISTER_CONTRACT_FUNCTIONS_AND_PROCEDURES(TESTEXA);
