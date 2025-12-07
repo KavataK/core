@@ -7,7 +7,7 @@ constexpr uint64 QBOND_MIN_MBONDS_TO_STAKE = 10ULL;
 constexpr sint64 QBOND_MBONDS_EMISSION = 1000000000LL;
 constexpr uint16 QBOND_START_EPOCH = 182;
 
-constexpr uint16 QBOND_CYCLIC_START_EPOCH = 188;
+constexpr uint16 QBOND_CYCLIC_START_EPOCH = 190;
 constexpr uint16 QBOND_FULL_CYCLE_EPOCHS_AMOUNT = 53;
 
 constexpr uint64 QBOND_STAKE_FEE_PERCENT = 50; // 0.5%
@@ -239,8 +239,6 @@ protected:
     id _adminAddress;
     id _devAddress;
 
-    uint8 _cyclicMbondCounter;
-
     struct _Order
     {
         id owner;
@@ -249,6 +247,8 @@ protected:
     };
     Collection<_Order, 1048576> _askOrders;
     Collection<_Order, 1048576> _bidOrders;
+
+    uint8 _cyclicMbondCounter;
 
     struct _NumberOfReservedMBonds_input
     {
@@ -1383,4 +1383,4 @@ protected:
         state._askOrders.cleanupIfNeeded();
         state._bidOrders.cleanupIfNeeded();
     }
-};
+}; 
