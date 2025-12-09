@@ -7,7 +7,7 @@ constexpr uint64 QBOND_MIN_MBONDS_TO_STAKE = 10ULL;
 constexpr sint64 QBOND_MBONDS_EMISSION = 1000000000LL;
 constexpr uint64 QBOND_STAKE_LIMIT_PER_EPOCH = 1000000ULL;
 
-constexpr uint16 QBOND_START_EPOCH = 182;
+constexpr uint16 QBOND_START_EPOCH = 179;
 constexpr uint16 QBOND_CYCLIC_START_EPOCH = 191;
 constexpr uint16 QBOND_FULL_CYCLE_EPOCHS_AMOUNT = 53;
 
@@ -1313,6 +1313,10 @@ protected:
 
             locals.mbondIdentity = SELF;
             locals.mbondIdentity.u64._3 = locals.tempMbondInfo.name;
+            if ((uint16)(qpi.epoch() - 53) >= QBOND_CYCLIC_START_EPOCH)
+            {
+                locals.mbondIdentity.u16._3 = (uint16)(qpi.epoch() - 53);
+            }
 
             locals.elementIndex = state._askOrders.headIndex(locals.mbondIdentity);
             while (locals.elementIndex != NULL_INDEX)
