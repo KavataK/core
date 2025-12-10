@@ -7,7 +7,8 @@ enum QSWAPLogInfo {
 	QSWAPSwapExactQuForAsset = 6,
 	QSWAPSwapQuForExactAsset = 7,
 	QSWAPSwapExactAssetForQu = 8,
-	QSWAPSwapAssetForExactQu = 9
+	QSWAPSwapAssetForExactQu = 9,
+	QSWAPFailedDistribution = 10,
 };
 
 // FIXED CONSTANTS
@@ -52,6 +53,15 @@ struct QSWAPSwapMessage
 	uint64 assetName;
 	sint64 assetAmountIn;
 	sint64 assetAmountOut;
+	sint8 _terminator;
+};
+
+struct QSWAPFailedDistributionMessage
+{
+	uint32 _contractIndex;
+	uint32 _type;
+	id dst;
+	uint64 amount;
 	sint8 _terminator;
 };
 
@@ -287,26 +297,6 @@ public:
 	};
 
 protected:
-	uint32 swapFeeRate; 		// e.g. 30: 0.3% (base: 10_000)
-	uint32 investRewardsFeeRate;// 3: 3% of swap fees to Invest & Rewards (base: 100)
-	uint32 shareholderFeeRate; 	// 27: 27% of swap fees to SC shareholders (base: 100)
-	uint32 poolCreationFeeRate;	// e.g. 10: 10% (base: 100)
-
-	id investRewardsId;
-	uint64 investRewardsEarnedFee;
-	uint64 investRewardsDistributedAmount;
-
-	uint64 shareholderEarnedFee;
-	uint64 shareholderDistributedAmount;
-
-	uint32 qxFeeRate;			// 5: 5% of swap fees to QX (base: 100)
-	uint32 burnFeeRate;			// 1: 1% of swap fees burned (base: 100)
-
-	uint64 qxEarnedFee;
-	uint64 qxDistributedAmount;
-
-	uint64 burnEarnedFee;		// Total burn fees collected (to be burned in END_TICK)
-	uint64 burnedAmount;		// Total amount actually burned
 
 	struct PoolBasicState
 	{
@@ -322,8 +312,38 @@ protected:
 		sint64 liquidity;
 	};
 
+	// -----------------------------
+	// --- state variables begin ---
+	// -----------------------------
+
+	uint32 swapFeeRate; 		// e.g. 30: 0.3% (base: 10_000)
+	uint32 investRewardsFeeRate;// 3: 3% of swap fees to Invest & Rewards (base: 100)
+	uint32 shareholderFeeRate; 	// 27: 27% of swap fees to SC shareholders (base: 100)
+	uint32 poolCreationFeeRate;	// e.g. 10: 10% (base: 100)
+
+	id investRewardsId;
+	uint64 investRewardsEarnedFee;
+	uint64 investRewardsDistributedAmount;
+
+	uint64 shareholderEarnedFee;
+	uint64 shareholderDistributedAmount;
+
 	Array<PoolBasicState, QSWAP_MAX_POOL> mPoolBasicStates;
 	Collection<LiquidityInfo, QSWAP_MAX_POOL* QSWAP_MAX_USER_PER_POOL> mLiquidities;
+
+	uint32 qxFeeRate;			// 5: 5% of swap fees to QX (base: 100)
+	uint32 burnFeeRate;			// 1: 1% of swap fees burned (base: 100)
+
+	uint64 qxEarnedFee;
+	uint64 qxDistributedAmount;
+
+	uint64 burnEarnedFee;		// Total burn fees collected (to be burned in END_TICK)
+	uint64 burnedAmount;		// Total amount actually burned
+
+	// -----------------------------
+	// ---- state variables end ----
+	// -----------------------------
+
 
 	inline static sint64 min(sint64 a, sint64 b)
 	{
@@ -382,6 +402,8 @@ protected:
 		uint128& tmpRes
 	)
 	{
+		if (amountIn >= MAX_AMOUNT) return -1;
+
 		amountInWithFee = uint128(amountIn) * uint128(QSWAP_SWAP_FEE_BASE - fee);
 		numerator = uint128(reserveOut) * amountInWithFee;
 		denominator = uint128(reserveIn) * uint128(QSWAP_SWAP_FEE_BASE) + amountInWithFee;
@@ -402,6 +424,8 @@ protected:
 	// x = (reserveIn * amountOut * 10000) / ((reserveOut - amountOut) * (10000 - fee))
 	inline static sint64 getAmountInTakeFeeFromInToken(sint64& amountOut, sint64& reserveIn, sint64& reserveOut, uint32 fee, uint128& numerator, uint128& denominator, uint128& tmpRes)
 	{
+		if (amountOut >= MAX_AMOUNT) return -1;
+
 		// Calculate full numerator first to avoid premature truncation
 		numerator = uint128(reserveIn) * uint128(amountOut) * uint128(QSWAP_SWAP_FEE_BASE);
 		denominator = uint128(reserveOut - amountOut) * uint128(QSWAP_SWAP_FEE_BASE - fee);
@@ -427,6 +451,8 @@ protected:
 	// This is intentional: the caller needs the gross value for fee distribution calculation.
 	inline static sint64 getAmountOutTakeFeeFromOutToken(sint64& amountIn, sint64& reserveIn, sint64& reserveOut, uint32 fee, uint128& numerator, uint128& denominator, uint128& tmpRes)
 	{
+		if (amountIn >= MAX_AMOUNT) return -1;
+
 		numerator = uint128(reserveOut) * uint128(amountIn);
 		denominator = uint128(reserveIn + amountIn);
 
@@ -445,6 +471,8 @@ protected:
 	// x = (reserveIn * amountOut * 10000) / (reserveOut * (10000-fee) - amountOut * 10000)
 	inline static sint64 getAmountInTakeFeeFromOutToken(sint64& amountOut, sint64& reserveIn, sint64& reserveOut, uint32 fee, uint128& numerator, uint128& denominator, uint128& tmpRes)
 	{
+		if (amountOut >= MAX_AMOUNT) return -1;
+
 		// Calculate full numerator to avoid premature truncation
 		numerator = uint128(reserveIn) * uint128(amountOut) * uint128(QSWAP_SWAP_FEE_BASE);
 
@@ -883,9 +911,12 @@ protected:
 			qpi.transfer(qpi.invocator(), qpi.invocationReward());
 			return;
 		}
-		else if (qpi.invocationReward() > locals.feesOutput.assetIssuanceFee)
+		else
 		{
-			qpi.transfer(qpi.invocator(), qpi.invocationReward() - locals.feesOutput.assetIssuanceFee);
+			if (qpi.invocationReward() > locals.feesOutput.assetIssuanceFee)
+			{
+				qpi.transfer(qpi.invocator(), qpi.invocationReward() - locals.feesOutput.assetIssuanceFee);
+			}
 			state.shareholderEarnedFee += locals.feesOutput.assetIssuanceFee;
 		}
 	}
@@ -2302,6 +2333,11 @@ protected:
 			state.qxFeeRate = 5;				// 5% of swap fees to QX
 			state.burnFeeRate = 1;				// 1% of swap fees burned
 
+			state.qxEarnedFee = 0;
+			state.qxDistributedAmount = 0;
+			state.burnEarnedFee = 0;
+			state.burnedAmount = 0;
+
 			// VJGRUFWJCUSNHCQJRWRRYXAUEJFCVHYPXWKTDLYKUACPVVYBGOLVCJSF(RONJ)
 			state.investRewardsId = ID(_V, _J, _G, _R, _U, _F, _W, _J, _C, _U, _S, _N, _H, _C, _Q, _J, _R, _W, _R, _R, _Y, _X, _A, _U, _E, _J, _F, _C, _V, _H, _Y, _P, _X, _W, _K, _T, _D, _L, _Y, _K, _U, _A, _C, _P, _V, _V, _Y, _B, _G, _O, _L, _V, _C, _J, _S, _F);
 		}
@@ -2312,6 +2348,8 @@ protected:
 		uint64 toDistribute;
 		uint64 toBurn;
 		uint64 dividendPerComputor;
+		sint64 transferredAmount;
+		QSWAPFailedDistributionMessage logMsg;
 	};
 
 	END_TICK_WITH_LOCALS()
@@ -2320,16 +2358,34 @@ protected:
 		if (state.investRewardsEarnedFee > state.investRewardsDistributedAmount)
 		{
 			locals.toDistribute = state.investRewardsEarnedFee - state.investRewardsDistributedAmount;
-			qpi.transfer(state.investRewardsId, locals.toDistribute);
-			state.investRewardsDistributedAmount += locals.toDistribute;
+			locals.transferredAmount = qpi.transfer(state.investRewardsId, locals.toDistribute);
+			if (locals.transferredAmount < 0)
+			{
+				locals.logMsg._contractIndex = SELF_INDEX;
+				locals.logMsg._type = QSWAPFailedDistribution;
+				locals.logMsg.dst = state.investRewardsId;
+				locals.logMsg.amount = locals.toDistribute;
+				LOG_INFO(locals.logMsg);
+			}
+			else
+				state.investRewardsDistributedAmount += locals.toDistribute;
 		}
 
-		// Distribute QX fees as revenue donation (QX is contract index 1)
+		// Distribute QX fees as donation
 		if (state.qxEarnedFee > state.qxDistributedAmount)
 		{
 			locals.toDistribute = state.qxEarnedFee - state.qxDistributedAmount;
-			qpi.transfer(m256i(1, 0, 0, 0), locals.toDistribute);
-			state.qxDistributedAmount += locals.toDistribute;
+			locals.transferredAmount = qpi.transfer(id(QX_CONTRACT_INDEX, 0, 0, 0), locals.toDistribute);
+			if (locals.transferredAmount < 0)
+			{
+				locals.logMsg._contractIndex = SELF_INDEX;
+				locals.logMsg._type = QSWAPFailedDistribution;
+				locals.logMsg.dst = id(QX_CONTRACT_INDEX, 0, 0, 0);
+				locals.logMsg.amount = locals.toDistribute;
+				LOG_INFO(locals.logMsg);
+			}
+			else
+				state.qxDistributedAmount += locals.toDistribute;
 		}
 
 		// Distribute shareholder fees (to IPO shareholders via dividends)
