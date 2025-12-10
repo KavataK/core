@@ -883,12 +883,9 @@ protected:
 			qpi.transfer(qpi.invocator(), qpi.invocationReward());
 			return;
 		}
-		else
+		else if (qpi.invocationReward() > locals.feesOutput.assetIssuanceFee)
 		{
-			if (qpi.invocationReward() > locals.feesOutput.assetIssuanceFee)
-			{
-				qpi.transfer(qpi.invocator(), qpi.invocationReward() - locals.feesOutput.assetIssuanceFee);
-			}
+			qpi.transfer(qpi.invocator(), qpi.invocationReward() - locals.feesOutput.assetIssuanceFee);
 			state.shareholderEarnedFee += locals.feesOutput.assetIssuanceFee;
 		}
 	}
