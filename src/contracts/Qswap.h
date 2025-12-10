@@ -7,8 +7,7 @@ enum QSWAPLogInfo {
 	QSWAPSwapExactQuForAsset = 6,
 	QSWAPSwapQuForExactAsset = 7,
 	QSWAPSwapExactAssetForQu = 8,
-	QSWAPSwapAssetForExactQu = 9,
-	QSWAPFailedDistribution = 10,
+	QSWAPSwapAssetForExactQu = 9
 };
 
 // FIXED CONSTANTS
@@ -53,15 +52,6 @@ struct QSWAPSwapMessage
 	uint64 assetName;
 	sint64 assetAmountIn;
 	sint64 assetAmountOut;
-	sint8 _terminator;
-};
-
-struct QSWAPFailedDistributionMessage
-{
-	uint32 _contractIndex;
-	uint32 _type;
-	id dst;
-	uint64 amount;
 	sint8 _terminator;
 };
 
@@ -392,8 +382,6 @@ protected:
 		uint128& tmpRes
 	)
 	{
-		if (amountIn >= MAX_AMOUNT) return -1;
-
 		amountInWithFee = uint128(amountIn) * uint128(QSWAP_SWAP_FEE_BASE - fee);
 		numerator = uint128(reserveOut) * amountInWithFee;
 		denominator = uint128(reserveIn) * uint128(QSWAP_SWAP_FEE_BASE) + amountInWithFee;
@@ -414,8 +402,6 @@ protected:
 	// x = (reserveIn * amountOut * 10000) / ((reserveOut - amountOut) * (10000 - fee))
 	inline static sint64 getAmountInTakeFeeFromInToken(sint64& amountOut, sint64& reserveIn, sint64& reserveOut, uint32 fee, uint128& numerator, uint128& denominator, uint128& tmpRes)
 	{
-		if (amountOut >= MAX_AMOUNT) return -1;
-
 		// Calculate full numerator first to avoid premature truncation
 		numerator = uint128(reserveIn) * uint128(amountOut) * uint128(QSWAP_SWAP_FEE_BASE);
 		denominator = uint128(reserveOut - amountOut) * uint128(QSWAP_SWAP_FEE_BASE - fee);
@@ -441,8 +427,6 @@ protected:
 	// This is intentional: the caller needs the gross value for fee distribution calculation.
 	inline static sint64 getAmountOutTakeFeeFromOutToken(sint64& amountIn, sint64& reserveIn, sint64& reserveOut, uint32 fee, uint128& numerator, uint128& denominator, uint128& tmpRes)
 	{
-		if (amountIn >= MAX_AMOUNT) return -1;
-
 		numerator = uint128(reserveOut) * uint128(amountIn);
 		denominator = uint128(reserveIn + amountIn);
 
@@ -461,8 +445,6 @@ protected:
 	// x = (reserveIn * amountOut * 10000) / (reserveOut * (10000-fee) - amountOut * 10000)
 	inline static sint64 getAmountInTakeFeeFromOutToken(sint64& amountOut, sint64& reserveIn, sint64& reserveOut, uint32 fee, uint128& numerator, uint128& denominator, uint128& tmpRes)
 	{
-		if (amountOut >= MAX_AMOUNT) return -1;
-
 		// Calculate full numerator to avoid premature truncation
 		numerator = uint128(reserveIn) * uint128(amountOut) * uint128(QSWAP_SWAP_FEE_BASE);
 
@@ -2333,8 +2315,6 @@ protected:
 		uint64 toDistribute;
 		uint64 toBurn;
 		uint64 dividendPerComputor;
-		sint64 transferredAmount;
-		QSWAPFailedDistributionMessage logMsg;
 	};
 
 	END_TICK_WITH_LOCALS()
@@ -2343,34 +2323,16 @@ protected:
 		if (state.investRewardsEarnedFee > state.investRewardsDistributedAmount)
 		{
 			locals.toDistribute = state.investRewardsEarnedFee - state.investRewardsDistributedAmount;
-			locals.transferredAmount = qpi.transfer(state.investRewardsId, locals.toDistribute);
-			if (locals.transferredAmount < 0)
-			{
-				locals.logMsg._contractIndex = SELF_INDEX;
-				locals.logMsg._type = QSWAPFailedDistribution;
-				locals.logMsg.dst = state.investRewardsId;
-				locals.logMsg.amount = locals.toDistribute;
-				LOG_INFO(locals.logMsg);
-			}
-			else
-				state.investRewardsDistributedAmount += locals.toDistribute;
+			qpi.transfer(state.investRewardsId, locals.toDistribute);
+			state.investRewardsDistributedAmount += locals.toDistribute;
 		}
 
-		// Distribute QX fees as donation
+		// Distribute QX fees as revenue donation (QX is contract index 1)
 		if (state.qxEarnedFee > state.qxDistributedAmount)
 		{
 			locals.toDistribute = state.qxEarnedFee - state.qxDistributedAmount;
-			locals.transferredAmount = qpi.transfer(id(QX_CONTRACT_INDEX, 0, 0, 0), locals.toDistribute);
-			if (locals.transferredAmount < 0)
-			{
-				locals.logMsg._contractIndex = SELF_INDEX;
-				locals.logMsg._type = QSWAPFailedDistribution;
-				locals.logMsg.dst = id(QX_CONTRACT_INDEX, 0, 0, 0);
-				locals.logMsg.amount = locals.toDistribute;
-				LOG_INFO(locals.logMsg);
-			}
-			else
-				state.qxDistributedAmount += locals.toDistribute;
+			qpi.transfer(m256i(1, 0, 0, 0), locals.toDistribute);
+			state.qxDistributedAmount += locals.toDistribute;
 		}
 
 		// Distribute shareholder fees (to IPO shareholders via dividends)
