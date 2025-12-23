@@ -33,6 +33,7 @@ struct QLOAN : public ContractBase
         id borrower;
         id creditor;
         id acceptedBy;
+        id privateId;
 
         uint64 reqId;
 
@@ -56,6 +57,7 @@ struct QLOAN : public ContractBase
         id creditor;
         // Using these field to know which request user is accepted and which is created by him
         id acceptedBy;
+        id privateId;
 
         Array<Asset, QLOAN_MAX_ASSETS_NUM> assets;
         Array<sint64, QLOAN_MAX_ASSETS_NUM> assetAmount;
@@ -68,7 +70,6 @@ struct QLOAN : public ContractBase
         uint64 debtAmount;
         uint64 epochsLeft;
 
-        bool isPrivate;
         bool assetsToCreditor;
 
         enum LoanReqState state;
@@ -163,6 +164,9 @@ public:
 
     struct placeLoanReq_input
     {
+        // It's for whom these deal
+        id privateId;
+
         Array<Asset, QLOAN_MAX_ASSETS_NUM> assets;
         Array<sint64, QLOAN_MAX_ASSETS_NUM> assetAmount;
         uint8 assetsNum;
@@ -171,7 +175,6 @@ public:
         uint64 interestRate;
         uint64 returnPeriodInEpochs;
 
-        bool isPrivate;
         bool isLoanReq;
         bool assetsToCreditor;
     };
@@ -260,7 +263,7 @@ public:
         locals.loanReqInfo.debtAmount = input.price;
         locals.loanReqInfo.returnPeriodInEpochs = input.returnPeriodInEpochs;
         locals.loanReqInfo.epochsLeft = input.returnPeriodInEpochs;
-        locals.loanReqInfo.isPrivate = input.isPrivate;
+        locals.loanReqInfo.privateId = input.privateId;
         locals.loanReqInfo.assetsToCreditor = input.assetsToCreditor;
         locals.loanReqInfo.state = LoanReqState::IDLE;
 
@@ -319,6 +322,13 @@ public:
         }
         // Check that request in IDLE state
         if (locals.tmpLoanReq.state != LoanReqState::IDLE)
+        {
+            qpi.transfer(qpi.invocator(), qpi.invocationReward());
+            return;
+        }
+
+        // Check that request is not private or IF private then check that user can accept it
+        if (locals.tmpLoanReq.privateId != NULL_ID && locals.tmpLoanReq.privateId != qpi.invocator())
         {
             qpi.transfer(qpi.invocator(), qpi.invocationReward());
             return;
@@ -614,6 +624,7 @@ public:
         output.loanOutputInfo.borrower = input.loanReqInfo.borrower;
         output.loanOutputInfo.creditor = input.loanReqInfo.creditor;
         output.loanOutputInfo.acceptedBy = input.loanReqInfo.acceptedBy;
+        output.loanOutputInfo.privateId = input.loanReqInfo.privateId;
         output.loanOutputInfo.reqId = input.loanReqId;
         output.loanOutputInfo.assets = input.loanReqInfo.assets;
         output.loanOutputInfo.assetAmount = input.loanReqInfo.assetAmount;
@@ -657,16 +668,16 @@ public:
         while (locals.activeLoanReqsIdx != NULL_INDEX && locals.outputLoanReqsIdx < 256)
         {
             locals.tmpLoanReqInfo = state._loanReqs.value(locals.activeLoanReqsIdx);
-            if (locals.tmpLoanReqInfo.isPrivate == false)
-            {
-                locals.fillLoanReqForOutputInput.loanReqId = state._loanReqs.key(locals.activeLoanReqsIdx);
-                locals.fillLoanReqForOutputInput.loanReqInfo = locals.tmpLoanReqInfo;
-                CALL(_fillLoanReqForOutput, locals.fillLoanReqForOutputInput, locals.fillLoanReqForOutputOutput);
+            //if (locals.tmpLoanReqInfo.privateId == NULL_ID)
+            //{
+            locals.fillLoanReqForOutputInput.loanReqId = state._loanReqs.key(locals.activeLoanReqsIdx);
+            locals.fillLoanReqForOutputInput.loanReqInfo = locals.tmpLoanReqInfo;
+            CALL(_fillLoanReqForOutput, locals.fillLoanReqForOutputInput, locals.fillLoanReqForOutputOutput);
 
-                output.reqs.set(locals.outputLoanReqsIdx, locals.fillLoanReqForOutputOutput.loanOutputInfo);
-                locals.outputLoanReqsIdx++;
-                output.reqsAmount++;
-            }
+            output.reqs.set(locals.outputLoanReqsIdx, locals.fillLoanReqForOutputOutput.loanOutputInfo);
+            locals.outputLoanReqsIdx++;
+            output.reqsAmount++;
+            //}
 
             locals.activeLoanReqsIdx = state._loanReqs.nextElementIndex(locals.activeLoanReqsIdx);
         }
