@@ -2,6 +2,8 @@
 
 using namespace QPI;
 
+constexpr uint64 QLOAN_PLACE_LOAN_REQ_FEE = 3000;
+
 constexpr uint64 QLOAN_ACCEPTANCE_FEE_PERCENT = 15;
 constexpr uint64 QLOAN_DISTRIBUTE_PERCENT = 1500; // 15%
 constexpr uint64 QLOAN_BURN_PERCENT = 1500; // 15%
@@ -137,28 +139,61 @@ public:
 
     struct _checkAssetsPresence_locals
     {
-        Asset userReqAsset;
-        uint8 userReqAssetIdx;
+        uint64 loanReqsIdx;
+        LoanReqInfo tmpLoanReq;
+        Array<sint64, QLOAN_MAX_ASSETS_NUM> userAssetsAmountInvolved;
+
+        uint64 inputReqAssetIdx;
+        uint64 tmpReqAssetIdx;
     };
 
     PRIVATE_FUNCTION_WITH_LOCALS(_checkAssetsPresence)
     {
         output.allGood = true;
 
-        locals.userReqAssetIdx = 0;
-        locals.userReqAsset = input.assets.get(locals.userReqAssetIdx);
-        while (locals.userReqAssetIdx < input.assetsNum)
+        // Collect all user's tokens involved in others deals
+        locals.loanReqsIdx = state._loanReqs.nextElementIndex(NULL_INDEX);
+        while (locals.loanReqsIdx != NULL_INDEX)
         {
-            // Currently we have user asset, let's check user have enought of it
-            if (qpi.numberOfPossessedShares(locals.userReqAsset.assetName, locals.userReqAsset.issuer,
+            locals.tmpLoanReq = state._loanReqs.value(locals.loanReqsIdx);
+            // If user is a borrower - we need to check if assets transfered to the creditor in case of Active request,
+            // otherwise request might be in the IDLE state and we still should count these tokens
+            // If user is a creditor and assets should be transfered to creditor in active loan request then we should count these tokens too
+            if ((locals.tmpLoanReq.borrower == qpi.invocator() && ((locals.tmpLoanReq.state == LoanReqState::ACTIVE && locals.tmpLoanReq.assetsToCreditor == false) || locals.tmpLoanReq.state == LoanReqState::IDLE))
+                || (locals.tmpLoanReq.creditor == qpi.invocator() && (locals.tmpLoanReq.state == LoanReqState::ACTIVE && locals.tmpLoanReq.assetsToCreditor == true)))
+            {
+                // Iterate over assets in the user loan request
+                locals.inputReqAssetIdx = 0;
+                while (locals.inputReqAssetIdx < input.assetsNum)
+                {
+                    locals.tmpReqAssetIdx = 0;
+                    while (locals.tmpReqAssetIdx < locals.tmpLoanReq.assetsNum)
+                    {
+                        if (input.assets.get(locals.inputReqAssetIdx).assetName == locals.tmpLoanReq.assets.get(locals.tmpReqAssetIdx).assetName)
+                        {
+                            locals.userAssetsAmountInvolved.set(locals.inputReqAssetIdx,
+                                locals.userAssetsAmountInvolved.get(locals.inputReqAssetIdx) + locals.tmpLoanReq.assetAmount.get(locals.tmpReqAssetIdx));
+                        }
+                        locals.tmpReqAssetIdx++;
+                    }
+                    locals.inputReqAssetIdx++;
+                }
+            }
+            locals.loanReqsIdx = state._loanReqs.nextElementIndex(locals.loanReqsIdx);
+        }
+        // Check that user have enough of tokens considering his tokens from others deals
+        locals.inputReqAssetIdx = 0;
+        while (locals.inputReqAssetIdx < input.assetsNum)
+        {
+            if (qpi.numberOfPossessedShares(input.assets.get(locals.inputReqAssetIdx).assetName,
+                input.assets.get(locals.inputReqAssetIdx).issuer,
                 qpi.invocator(), qpi.invocator(),
-                SELF_INDEX, SELF_INDEX) < input.assetAmount.get(locals.userReqAssetIdx))
+                SELF_INDEX, SELF_INDEX) - locals.userAssetsAmountInvolved.get(locals.inputReqAssetIdx) < input.assetAmount.get(locals.inputReqAssetIdx))
             {
                 output.allGood = false;
                 return;
             }
-            locals.userReqAssetIdx++;
-            locals.userReqAsset = input.assets.get(locals.userReqAssetIdx);
+            locals.inputReqAssetIdx++;
         }
     }
 
@@ -226,29 +261,42 @@ public:
 
         if (input.isLoanReq)
         {
+            // Check he have enough qus for FEE
+            if (qpi.invocationReward() < QLOAN_PLACE_LOAN_REQ_FEE)
+            {
+                qpi.transfer(qpi.invocator(), qpi.invocationReward());
+                return;
+            }
+            // We still want to get the FEE from the user in both cases(if he have enough assests and NOT)
+            else if (qpi.invocationReward() > QLOAN_PLACE_LOAN_REQ_FEE)
+            {
+                qpi.transfer(qpi.invocator(), qpi.invocationReward() - QLOAN_PLACE_LOAN_REQ_FEE);
+            }
+            state._earnedAmount += QLOAN_PLACE_LOAN_REQ_FEE;
+
             locals.checkAssetsPresenceInput.assets = input.assets;
             locals.checkAssetsPresenceInput.assetAmount = input.assetAmount;
             locals.checkAssetsPresenceInput.assetsNum = input.assetsNum;
             CALL(_checkAssetsPresence, locals.checkAssetsPresenceInput, locals.checkAssetsPresenceOutput);
+
             if (locals.checkAssetsPresenceOutput.allGood == false)
             {
-                qpi.transfer(qpi.invocator(), qpi.invocationReward());
                 return;
             }
-            qpi.transfer(qpi.invocator(), qpi.invocationReward());
         }
         // User want to create creditor request, he wants assets, we need to check he have enough QUs
         else
         {
-            if (qpi.invocationReward() < input.price)
+            if (qpi.invocationReward() < input.price + QLOAN_PLACE_LOAN_REQ_FEE)
             {
                 qpi.transfer(qpi.invocator(), qpi.invocationReward());
                 return;
             }
-            else if (qpi.invocationReward() > input.price)
+            else if (qpi.invocationReward() > input.price + QLOAN_PLACE_LOAN_REQ_FEE)
             {
-                qpi.transfer(qpi.invocator(), qpi.invocationReward() - input.price);
+                qpi.transfer(qpi.invocator(), qpi.invocationReward() - input.price - QLOAN_PLACE_LOAN_REQ_FEE);
             }
+            state._earnedAmount += QLOAN_PLACE_LOAN_REQ_FEE;
         }
 
         // TODO(oleg): remove id from request struct
