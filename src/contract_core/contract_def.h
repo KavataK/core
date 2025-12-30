@@ -205,15 +205,6 @@
 #define CONTRACT_STATE2_TYPE QRAFFLE2
 #include "contracts/QRaffle.h"
 
-#undef CONTRACT_INDEX
-#undef CONTRACT_STATE_TYPE
-#undef CONTRACT_STATE2_TYPE
-
-#define Q1951_CONTRACT_INDEX 20
-#define CONTRACT_INDEX Q1951_CONTRACT_INDEX
-#define CONTRACT_STATE_TYPE RANDOM
-#define CONTRACT_STATE2_TYPE RANDOM2
-
 
 // new contracts should be added above this line
 
@@ -322,7 +313,7 @@ constexpr struct ContractDescription
     {"QBOND", 182, 10000, sizeof(QBOND)}, // proposal in epoch 180, IPO in 181, construction and first use in 182
     {"QIP", 189, 10000, sizeof(QIP)}, // proposal in epoch 187, IPO in 188, construction and first use in 189
     {"QRAFFLE", 192, 10000, sizeof(QRAFFLE)}, // proposal in epoch 190, IPO in 191, construction and first use in 192
-    {"Q1951", 193, 10000, sizeof(IPO)},
+
 
     // new contracts should be added above this line
 #ifdef INCLUDE_CONTRACT_TEST_EXAMPLES
