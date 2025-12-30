@@ -421,17 +421,17 @@ constexpr struct ContractDescription
     {"QBOND", 182, 10000, sizeof(QBOND)}, // proposal in epoch 180, IPO in 181, construction and first use in 182
     {"QIP", 189, 10000, sizeof(QIP)}, // proposal in epoch 187, IPO in 188, construction and first use in 189
     {"QRAFFLE", 192, 10000, sizeof(QRAFFLE)}, // proposal in epoch 190, IPO in 191, construction and first use in 192
-    {"Q1921", 193, 10000, sizeof(IPO)},
-    {"Q1922", 193, 10000, sizeof(IPO)},
-    {"Q193", 194, 10000, sizeof(IPO)},
-    {"Q194", 195, 10000, sizeof(IPO)},
-    {"Q195", 196, 10000, sizeof(IPO)},
+    {"Q1951", 196, 10000, sizeof(IPO)},
+    {"Q1952", 196, 10000, sizeof(IPO)},
     {"Q196", 197, 10000, sizeof(IPO)},
     {"Q197", 198, 10000, sizeof(IPO)},
     {"Q198", 199, 10000, sizeof(IPO)},
-    {"Q1991", 200, 10000, sizeof(IPO)},
-    {"Q1992", 200, 10000, sizeof(IPO)},
+    {"Q199", 200, 10000, sizeof(IPO)},
     {"Q200", 201, 10000, sizeof(IPO)},
+    {"Q201", 202, 10000, sizeof(IPO)},
+    {"Q2021", 203, 10000, sizeof(IPO)},
+    {"Q2022", 203, 10000, sizeof(IPO)},
+    {"Q203", 204, 10000, sizeof(IPO)},
     // new contracts should be added above this line
 #ifdef INCLUDE_CONTRACT_TEST_EXAMPLES
     {"TESTEXA", 138, 10000, sizeof(TESTEXA)},
