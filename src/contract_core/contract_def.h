@@ -391,7 +391,7 @@ constexpr struct ContractDescription
     {"QDRAW", 179, 10000, sizeof(QDRAW::StateData)}, // proposal in epoch 177, IPO in 178, construction and first use in 179
     {"RL", 182, 10000, sizeof(RL::StateData)}, // proposal in epoch 180, IPO in 181, construction and first use in 182
     {"QBOND", 182, 10000, sizeof(QBOND::StateData)}, // proposal in epoch 180, IPO in 181, construction and first use in 182
-    {"QIP", 210, 10000, sizeof(QIP::StateData)}, // proposal in epoch 187, IPO in 188, construction and first use in 189
+    {"QIP", 210, 10000, sizeof(IPO)}, // proposal in epoch 187, IPO in 188, construction and first use in 189
     {"QRAFFLE", 192, 10000, sizeof(QRAFFLE::StateData)}, // proposal in epoch 190, IPO in 191, construction and first use in 192
     {"QRWA", 197, 10000, sizeof(QRWA::StateData)}, // proposal in epoch 195, IPO in 196, construction and first use in 197
 	{"QRP", 199, 10000, sizeof(IPO)}, // proposal in epoch 197, IPO in 198, construction and first use in 199
