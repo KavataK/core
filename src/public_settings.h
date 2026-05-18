@@ -36,6 +36,7 @@
 #define TICK_DURATION_FOR_ALLOCATION_MS 7000
 #define TRANSACTION_SPARSENESS 4
 
+
 // Number of ticks that are stored in the pending txs pool. This also defines how many ticks in advance a tx can be registered.
 #define PENDING_TXS_POOL_NUM_TICKS (1000 * 60 * 10ULL / TICK_DURATION_FOR_ALLOCATION_MS) // 10 minutes
 
@@ -108,6 +109,7 @@ static constexpr unsigned long long ADDITION_NUMBER_OF_NEIGHBORS = 728;    // 2M
 static constexpr unsigned long long ADDITION_NUMBER_OF_MUTATIONS = 500;
 static constexpr unsigned long long ADDITION_POPULATION_THRESHOLD = ADDITION_NUMBER_OF_INPUT_NEURONS + ADDITION_NUMBER_OF_OUTPUT_NEURONS + ADDITION_NUMBER_OF_MUTATIONS; // P
 static constexpr unsigned int ADDITION_SOLUTION_THRESHOLD_DEFAULT = 68812; // special value for testnet
+
 
 // Multipler of score
 static constexpr unsigned int HYPERIDENTITY_SOLUTION_MULTIPLER = 1;
