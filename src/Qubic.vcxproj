@@ -129,6 +129,7 @@
     <ClInclude Include="platform\time_stamp_counter.h" />
     <ClInclude Include="platform\global_var.h" />
     <ClInclude Include="platform\virtual_memory.h" />
+    <ClInclude Include="contracts\QLoan.h" />
     <ClInclude Include="qpi\impl\qpi_assets_impl.h" />
     <ClInclude Include="qpi\impl\qpi_collection_impl.h" />
     <ClInclude Include="qpi\impl\qpi_hash_map_impl.h" />

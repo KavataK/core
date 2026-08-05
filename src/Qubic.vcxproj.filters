@@ -430,6 +430,9 @@
     <ClInclude Include="oc_interfaces\Mock.h">
       <Filter>oc_interfaces</Filter>
     </ClInclude>
+    <ClInclude Include="contracts\QLoan.h">
+      <Filter>contracts</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="platform">

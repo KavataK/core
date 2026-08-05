@@ -422,8 +422,7 @@ struct EpochRevenueData
 static EpochRevenueData gEpochRevenueData;
 
 static constexpr unsigned long long revenueDataPerTickArrays = 5;
-static constexpr unsigned long long revenueDataFixedSize =
-    sizeof(EpochRevenueData) - revenueDataPerTickArrays * MAX_NUMBER_OF_TICKS_PER_EPOCH * sizeof(unsigned short);
+static constexpr unsigned long long revenueDataFixedSize = offsetof(EpochRevenueData, perTickTxCount);
 static_assert(revenueDataFixedSize == 8 + 4ULL * NUMBER_OF_COMPUTORS * sizeof(unsigned long long),
     "EpochRevenueData has unexpected padding; the snapshot re-layout below relies on its exact layout");
 
