@@ -3,6 +3,7 @@ using namespace QPI;
 constexpr uint64 QLOAN_PLACE_LOAN_REQ_FEE = 100000;
 
 constexpr uint64 QLOAN_ACCEPTANCE_FEE_PERCENT = 15;
+constexpr uint64 QLOAN_EARLY_REPAY_INTEREST_PERCENT = 30; // 30% of promised interest until 1/3 of term
 constexpr uint64 QLOAN_DISTRIBUTE_PERCENT = 0; // 0%
 constexpr uint64 QLOAN_BURN_PERCENT = 300; // 3%
 constexpr uint64 QLOAN_QVAULT_PERCENT = 9700; // 97%
@@ -154,11 +155,8 @@ struct QLOAN : public ContractBase
         while (locals.loanReqsIdx != NULL_INDEX)
         {
             locals.tmpLoanReq = state.get()._loanReqs.value(locals.loanReqsIdx);
-            // If user is a borrower - we need to check if assets transfered to the creditor in case of Active request,
-            // otherwise request might be in the IDLE state and we still should count these tokens
-            // If user is a creditor and assets should be transfered to creditor in active loan request then we should count these tokens too
-            if ((locals.tmpLoanReq.borrower == qpi.invocator() && ((locals.tmpLoanReq.state == LoanReqState::ACTIVE && locals.tmpLoanReq.assetsToCreditor == false) || locals.tmpLoanReq.state == LoanReqState::IDLE))
-                || (locals.tmpLoanReq.creditor == qpi.invocator() && (locals.tmpLoanReq.state == LoanReqState::ACTIVE && locals.tmpLoanReq.assetsToCreditor == true)))
+            if ((locals.tmpLoanReq.borrower == qpi.invocator() || locals.tmpLoanReq.creditor == qpi.invocator())
+                && (locals.tmpLoanReq.state == LoanReqState::IDLE || locals.tmpLoanReq.state == LoanReqState::ACTIVE))
             {
                 // Iterate over assets in the user loan request
                 locals.inputReqAssetIdx = 0;
@@ -254,6 +252,10 @@ public:
         Asset userReqAsset;
         uint8 userReqAssetIdx;
 
+        uint64 fullInterestAmount;
+        uint64 acceptanceFeeAmount;
+        uint64 earlyInterestAmount;
+
         _CheckAssetsPresence_input checkAssetsPresenceInput;
         _CheckAssetsPresence_output checkAssetsPresenceOutput;
     };
@@ -327,8 +329,11 @@ public:
         locals.loanReqInfo.assetsNum = input.assetsNum;
         locals.loanReqInfo.priceAmount = input.price;
         locals.loanReqInfo.interestRate = input.interestRate;
-        // until 1/3 of the loan period has passed, the debt will be input.price + 1/3 of the total interest
-        locals.loanReqInfo.debtAmount = input.price + div(input.price * input.interestRate, 300ULL);
+        // Early debt (until 1/3 of term): principal + acceptance fee + 30% of promised interest
+        locals.fullInterestAmount = div(smul(input.price, input.interestRate), 100ULL);
+        locals.acceptanceFeeAmount = div(smul(locals.fullInterestAmount, QLOAN_ACCEPTANCE_FEE_PERCENT), 100ULL);
+        locals.earlyInterestAmount = div(smul(locals.fullInterestAmount, QLOAN_EARLY_REPAY_INTEREST_PERCENT), 100ULL);
+        locals.loanReqInfo.debtAmount = sadd(input.price, sadd(locals.acceptanceFeeAmount, locals.earlyInterestAmount));
         locals.loanReqInfo.returnPeriodInEpochs = input.returnPeriodInEpochs;
         locals.loanReqInfo.epochsLeft = input.returnPeriodInEpochs;
         locals.loanReqInfo.privateId = input.privateId;
@@ -548,9 +553,9 @@ public:
         while (locals.loanReqsIdx != NULL_INDEX)
         {
             locals.tmpLoanReq = state.get()._loanReqs.value(locals.loanReqsIdx);
-            if (locals.tmpLoanReq.borrower == qpi.invocator()
-                && ((locals.tmpLoanReq.state == LoanReqState::ACTIVE && locals.tmpLoanReq.assetsToCreditor == false)
-                    || locals.tmpLoanReq.state == LoanReqState::IDLE))
+
+            if ((locals.tmpLoanReq.borrower == qpi.invocator() || locals.tmpLoanReq.creditor == qpi.invocator())
+                && (locals.tmpLoanReq.state == LoanReqState::ACTIVE || locals.tmpLoanReq.state == LoanReqState::IDLE))
             {
                 // Need to scan all assets in loan request to make sure it's have an assets user want to release
                 locals.userReqAssetIdx = 0;
@@ -621,11 +626,9 @@ public:
             return;
         }
 
-        // Make sure we check all conditions before moving forward
         if (locals.tmpLoanReq.borrower != qpi.invocator()
             || locals.tmpLoanReq.state != LoanReqState::ACTIVE
-            || sint64(locals.tmpLoanReq.debtAmount) > qpi.invocationReward()
-            || (locals.tmpLoanReq.returnPeriodInEpochs - locals.tmpLoanReq.epochsLeft) < locals.tmpLoanReq.returnPeriodInEpochs / 3)
+            || sint64(locals.tmpLoanReq.debtAmount) > qpi.invocationReward())
         {
             qpi.transfer(qpi.invocator(), qpi.invocationReward());
             return;
@@ -827,6 +830,13 @@ public:
         Asset userReqAsset;
         uint8 userReqAssetIdx;
 
+        uint64 epochsElapsed;
+        uint64 fullInterestAmount;
+        uint64 acceptanceFeeAmount;
+        uint64 earlyInterestAmount;
+        uint64 earlyDebtAmount;
+        uint64 proportionalDebtAmount;
+
         _TransferAssetsFromTo_input transferAssetsFromToInput;
         _TransferAssetsFromTo_output transferAssetsFromToOutput;
     };
@@ -859,14 +869,27 @@ public:
             else if (locals.tmpLoanReqInfo.state == LoanReqState::ACTIVE)
             {
                 locals.tmpLoanReqInfo.epochsLeft--;
+                locals.epochsElapsed = locals.tmpLoanReqInfo.returnPeriodInEpochs - locals.tmpLoanReqInfo.epochsLeft;
 
-                if (div((locals.tmpLoanReqInfo.returnPeriodInEpochs - locals.tmpLoanReqInfo.epochsLeft) * 100, locals.tmpLoanReqInfo.returnPeriodInEpochs) > 33)
+                locals.fullInterestAmount = div(smul(locals.tmpLoanReqInfo.priceAmount, locals.tmpLoanReqInfo.interestRate), 100ULL);
+                locals.acceptanceFeeAmount = div(smul(locals.fullInterestAmount, QLOAN_ACCEPTANCE_FEE_PERCENT), 100ULL);
+                locals.earlyInterestAmount = div(smul(locals.fullInterestAmount, QLOAN_EARLY_REPAY_INTEREST_PERCENT), 100ULL);
+                locals.earlyDebtAmount = sadd(locals.tmpLoanReqInfo.priceAmount, sadd(locals.acceptanceFeeAmount, locals.earlyInterestAmount));
+
+                if (div(smul(locals.epochsElapsed, 100ULL), locals.tmpLoanReqInfo.returnPeriodInEpochs) > 33)
                 {
-                    locals.tmpLoanReqInfo.debtAmount = div(smul(locals.tmpLoanReqInfo.priceAmount,
+                    locals.proportionalDebtAmount = div(smul(locals.tmpLoanReqInfo.priceAmount,
                         sadd(1000000ULL,
                             div(smul(10000ULL, smul(locals.tmpLoanReqInfo.interestRate,
-                                locals.tmpLoanReqInfo.returnPeriodInEpochs - locals.tmpLoanReqInfo.epochsLeft)),
+                                locals.epochsElapsed)),
                                 locals.tmpLoanReqInfo.returnPeriodInEpochs))), 1000000ULL);
+                    locals.tmpLoanReqInfo.debtAmount = locals.proportionalDebtAmount > locals.earlyDebtAmount
+                        ? locals.proportionalDebtAmount
+                        : locals.earlyDebtAmount;
+                }
+                else
+                {
+                    locals.tmpLoanReqInfo.debtAmount = locals.earlyDebtAmount;
                 }
 
                 state.mut()._loanReqs.replace(state.get()._loanReqs.key(locals.activeLoanReqsIdx), locals.tmpLoanReqInfo);
