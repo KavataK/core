@@ -1,0 +1,13 @@
+diff --git a/src/contracts/Qswap.h b/src/contracts/Qswap.h
+index 60a9074b..e40c94d4 100644
+--- a/src/contracts/Qswap.h
++++ b/src/contracts/Qswap.h
+@@ -1379,7 +1379,7 @@ protected:
+ 		}
+ 
+ 		// check the vadility of input params
+-		if (input.quAmountMin < 0 || input.assetAmountMin < 0)
++		if (input.quAmountMin < 0 || input.assetAmountMin < 0 || input.burnLiquidity <= 0)
+ 		{
+ 			qpi.transfer(qpi.invocator(), QSWAP_ADDITIONAL_FEE);
+ 			return;
